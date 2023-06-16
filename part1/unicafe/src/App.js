@@ -5,30 +5,39 @@ const Button = ({ handleClick, text }) => {
 	return <button onClick={handleClick}>{text}</button>;
 };
 
+const StatisticsLine = ({ text, value }) => (
+	<tr>
+		<td>{text}</td>
+		{text !== "positive" ? <td>{value}</td> : <td>{value}{"%"}</td>}
+	</tr>
+);
+
 const Statistics = ({ good, neutral, bad }) => {
 	const ifAny = (...ratings) => {
 		return [...ratings].some((x) => x > 0);
 	};
 
-	return (
+	return !ifAny(good, neutral, bad) ? (
+		<p>No Feedback given</p>
+	) : (
 		<div>
 			<h1>statistics</h1>
-			<p>good {good} </p>
-			<p>neutral {neutral} </p>
-			<p>bad {bad} </p>
-			<p>all {good + neutral + bad}</p>
-			<p>
-				average{" "}
-				{ifAny(good, neutral, bad)
-					? (good - bad) / (good + neutral + bad)
-					: 0}{" "}
-			</p>
-			<p>
-				positive{" "}
-				{ifAny(good, neutral, bad)
-					? (good * 100) / (good + neutral + bad)
-					: 0}{" "}
-			</p>
+			<table>
+				<tbody>
+					<StatisticsLine text="good" value={good} />
+					<StatisticsLine text="neutral" value={neutral} />
+					<StatisticsLine text="bad" value={bad} />
+					<StatisticsLine text="all" value={good + neutral + bad} />
+					<StatisticsLine
+						text="average"
+						value={(good - bad) / (good + neutral + bad)}
+					/>
+					<StatisticsLine
+						text="positive"
+						value={(good * 100) / (good + neutral + bad)}
+					/>
+				</tbody>
+			</table>
 		</div>
 	);
 };
