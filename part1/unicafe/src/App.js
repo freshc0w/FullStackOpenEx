@@ -13,9 +13,7 @@ const StatisticsLine = ({ text, value }) => (
 );
 
 const Statistics = ({ good, neutral, bad }) => {
-	const ifAny = (...ratings) => {
-		return [...ratings].some((x) => x > 0);
-	};
+	const ifAny = (...ratings) => [...ratings].some((x) => x > 0);
 
 	return !ifAny(good, neutral, bad) ? (
 		<p>No Feedback given</p>
