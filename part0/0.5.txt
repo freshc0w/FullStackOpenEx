@@ -1,0 +1,24 @@
+https://www.websequencediagrams.com
+
+title 0.5: Single Page App Diagram
+
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa
+server-->browser: HTML document
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/main.css
+server-->browser: main.css
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+server-->browser: spa.js
+
+note over browser:
+Javascript code gets executed.
+JSON info requested from server.
+end note
+
+browser->server: HTTP GET https://studies.cs.helsinki.fi/exampleapp/data.json
+server-->browser: [{ "content":"hour","date":"2023-06-12T02:12:09.238B" }, ...]
+
+note over browser:
+Event is then handled by browser,
+rendering the notes to the display.
+end note

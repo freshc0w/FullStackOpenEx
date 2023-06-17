@@ -1,0 +1,16 @@
+# https://www.websequencediagrams.com
+
+title 0.6: New note
+
+note over browser:
+User enters information and form gets submitted.
+end note
+
+note over browser:
+Submission of form is handled through Javascript.
+Submitted note, along with the previous notes is rendered.
+AJAX request is then sent to the server.
+end note
+
+browser->server: HTTP POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+server-->browser: JSON response
