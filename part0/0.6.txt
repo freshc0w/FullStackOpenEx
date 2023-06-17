@@ -1,4 +1,4 @@
-# https://www.websequencediagrams.com
+https://www.websequencediagrams.com
 
 title 0.6: New note
 
