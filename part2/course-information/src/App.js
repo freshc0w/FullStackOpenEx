@@ -1,18 +1,20 @@
 import React from "react";
 
 const Course = ({ course }) => {
+	const total = course.parts.reduce((acc, val) => acc + val.exercises, 0);
 
-    return (
-        <>
-            <Header course={course.name} />
-            <Content parts={course.parts} />
-        </>
-    )
+	return (
+		<>
+			<Header course={course.name} />
+			<Content parts={course.parts} />
+			<Total sum={total} />
+		</>
+	);
 };
 
 const Header = ({ course }) => <h1>{course}</h1>;
 
-const Total = ({ sum }) => <p>Number of exercises {sum}</p>;
+const Total = ({ sum }) => <p><strong>Number of exercises: {sum}</strong></p>
 
 const Part = ({ part }) => (
 	<p>
@@ -22,9 +24,9 @@ const Part = ({ part }) => (
 
 const Content = ({ parts }) => (
 	<>
-		<Part part={parts[0]} />
-		<Part part={parts[1]} />
-		<Part part={parts[2]} />
+		{parts.map((part) => (
+			<Part key={part.id} part={part} />
+		))}
 	</>
 );
 
@@ -47,6 +49,11 @@ const App = () => {
 				name: "State of a component",
 				exercises: 14,
 				id: 3,
+			},
+			{
+				name: "Redux",
+				exercises: 11,
+				id: 4,
 			},
 		],
 	};
