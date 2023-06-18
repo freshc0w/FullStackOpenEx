@@ -1,5 +1,50 @@
 import { useState } from "react";
 
+// Creation of components
+const Filter = ({ inputValue, handleInputChange }) => (
+	<>
+		Filter shown with:{" "}
+		<input value={inputValue} onChange={handleInputChange}></input>
+	</>
+);
+
+const PersonForm = (props) => {
+	const {
+		newName,
+		handleNameChange,
+		newNumber,
+		handleNumberChange,
+		handleAddClick,
+	} = props;
+
+	return (
+		<form>
+			<div>
+				name: <input value={newName} onChange={handleNameChange} />
+			</div>
+			<div>
+				number:{" "}
+				<input value={newNumber} onChange={handleNumberChange} />
+			</div>
+			<div>
+				<button type="submit" onClick={handleAddClick}>
+					add
+				</button>
+			</div>
+		</form>
+	);
+};
+
+const PersonInfo = ({ person }) => (
+	<li>
+		{person.name} {person.number}
+	</li>
+);
+
+const Persons = ({ filteredInput, showAllFnc, showFilteredFnc }) => {
+	return <ul>{!filteredInput ? showAllFnc() : showFilteredFnc()}</ul>;
+};
+
 const App = () => {
 	const [persons, setPersons] = useState([
 		{ name: "Arto Hellas", number: "040-123456", id: 1 },
@@ -48,51 +93,39 @@ const App = () => {
 	// Show all phonebook name and numbers based if the fitlered input is empty or not.
 
 	const showAll = () =>
-		persons.map((person) => (
-			<li key={person.id}>
-				{person.name} {person.number}
-			</li>
-		));
+		persons.map((person) => <PersonInfo key={person.id} person={person} />);
 
 	const showFiltered = () => {
 		return persons
 			.filter((person) =>
 				person.name.toLowerCase().includes(filteredInput.toLowerCase())
 			)
-			.map((p) => (
-				<li key={p.id}>
-					{p.name} {p.number}
-				</li>
-			));
+			.map((p) => <PersonInfo key={p.id} person={p} />);
 	};
 
 	return (
 		<div>
 			<h2>Phonebook</h2>
-			<div>
-				Filter shown with{" "}
-				<input
-					value={filteredInput}
-					onChange={handleFilteredInput}
-				></input>
-			</div>
+			<Filter
+				inputValue={filteredInput}
+				handleInputChange={handleFilteredInput}
+			/>
+
 			<h2>add a new</h2>
-			<form>
-				<div>
-					name: <input value={newName} onChange={handleNameChange} />
-				</div>
-				<div>
-					number:{" "}
-					<input value={newNumber} onChange={handleNumberChange} />
-				</div>
-				<div>
-					<button type="submit" onClick={handleAddClick}>
-						add
-					</button>
-				</div>
-			</form>
+			<PersonForm
+				newName={newName}
+				handleNameChange={handleNameChange}
+				newNumber={newNumber}
+				handleNumberChange={handleNumberChange}
+				handleAddClick={handleAddClick}
+			/>
 			<h2>Numbers</h2>
-			<ul>{!filteredInput ? showAll() : showFiltered()}</ul>
+			{/* <ul>{!filteredInput ? showAll() : showFiltered()}</ul> */}
+				<Persons
+					filteredInput={filteredInput}
+					showAllFnc={showAll}
+					showFilteredFnc={showFiltered}
+				/>
 		</div>
 	);
 };
