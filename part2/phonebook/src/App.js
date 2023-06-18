@@ -8,16 +8,23 @@ const App = () => {
 		setNewName(e.target.value);
 	};
 
-    const handleAddClick = (e) => {
-        e.preventDefault();
-        const newPersonObj = {
-            name: newName,
-            id: persons.length + 1,
-        }
+	const hasExistingName = () =>
+		persons.some((person) => person.name === newName);
 
-        setPersons([...persons, newPersonObj]);
-        setNewName("");
-    }
+	const handleAddClick = (e) => {
+		e.preventDefault();
+		if (hasExistingName()) {
+			alert(`${newName} is already added to phonebook`);
+			return;
+		}
+		const newPersonObj = {
+			name: newName,
+			id: persons.length + 1,
+		};
+
+		setPersons([...persons, newPersonObj]);
+		setNewName("");
+	};
 
 	return (
 		<div>
@@ -27,16 +34,17 @@ const App = () => {
 					name: <input value={newName} onChange={handleNameChange} />
 				</div>
 				<div>
-					<button type="submit"
-                        onClick={handleAddClick}>add</button>
+					<button type="submit" onClick={handleAddClick}>
+						add
+					</button>
 				</div>
 			</form>
 			<h2>Numbers</h2>
 			<ul>
-                {persons.map(person => {
-                    return <li key={person.id}>{person.name}</li>
-                })}
-            </ul>
+				{persons.map((person) => {
+					return <li key={person.id}>{person.name}</li>;
+				})}
+			</ul>
 		</div>
 	);
 };
