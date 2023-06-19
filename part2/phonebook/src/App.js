@@ -1,12 +1,15 @@
-import { useState } from "react";
-import axios from 'axios';
-
+import { useState, useEffect } from "react";
+import axios from "axios";
+import phoneServices from "./services/phones";
 
 // Creation of components
 const Filter = ({ inputValue, handleInputChange }) => (
 	<>
 		Filter shown with:{" "}
-		<input value={inputValue} onChange={handleInputChange}></input>
+		<input
+			value={inputValue}
+			onChange={handleInputChange}
+		></input>
 	</>
 );
 
@@ -22,14 +25,24 @@ const PersonForm = (props) => {
 	return (
 		<form>
 			<div>
-				name: <input value={newName} onChange={handleNameChange} />
+				name:{" "}
+				<input
+					value={newName}
+					onChange={handleNameChange}
+				/>
 			</div>
 			<div>
 				number:{" "}
-				<input value={newNumber} onChange={handleNumberChange} />
+				<input
+					value={newNumber}
+					onChange={handleNumberChange}
+				/>
 			</div>
 			<div>
-				<button type="submit" onClick={handleAddClick}>
+				<button
+					type="submit"
+					onClick={handleAddClick}
+				>
 					add
 				</button>
 			</div>
@@ -37,9 +50,10 @@ const PersonForm = (props) => {
 	);
 };
 
-const PersonInfo = ({ person }) => (
+const PersonInfo = ({ person, handleRemoveClick }) => (
 	<li>
 		{person.name} {person.number}
+		<button onClick={handleRemoveClick}>remove</button>
 	</li>
 );
 
@@ -47,17 +61,18 @@ const Persons = ({ filteredInput, showAllFnc, showFilteredFnc }) => {
 	return <ul>{!filteredInput ? showAllFnc() : showFilteredFnc()}</ul>;
 };
 
-const App = () => { 
-	const [persons, setPersons] = useState([
-		{ name: "Arto Hellas", number: "040-123456", id: 1 },
-		{ name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-		{ name: "Dan Abramov", number: "12-43-234345", id: 3 },
-		{ name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-		{ name: "Chia-Chuan-Tsou", number: "39-23-6423322", id: 5 },
-	]);
+const App = () => {
+	const [persons, setPersons] = useState([]);
 	const [newName, setNewName] = useState("");
 	const [newNumber, setNewNumber] = useState("");
 	const [filteredInput, setFilteredInput] = useState("");
+
+	// Get all persons data (name and number);
+	useEffect(() => {
+		phoneServices.getAll().then((initialData) => {
+			setPersons(initialData);
+		});
+	}, []);
 
 	const handleNameChange = (e) => {
 		setNewName(e.target.value);
@@ -70,22 +85,58 @@ const App = () => {
 	const hasExistingName = () =>
 		persons.some((person) => person.name === newName);
 
+	// ADDING INFORMATION TO THE PHONE BOOK
 	const handleAddClick = (e) => {
 		e.preventDefault();
 
+		const updatePersonNumber = () => {
+			const targetPerson = persons.find((p) => p.name === newName);
+			const changedPerson = { ...targetPerson, number: newNumber };
+
+			phoneServices
+				.update(targetPerson.id, changedPerson)
+				.then((returnedPerson) => {
+					setPersons(
+						persons.map((p) =>
+							p.id !== targetPerson.id ? p : returnedPerson
+						)
+					);
+				});
+
+            // reset all the input values
+            setNewName("");
+            setNewNumber("");
+		};
+
 		if (hasExistingName()) {
-			alert(`${newName} is already added to phonebook`);
+			window.confirm(
+				`${newName} has already been added to phonebook, replace the old number with a new one?`
+			) && updatePersonNumber();
+
 			return;
 		}
+
 		const newPersonObj = {
 			name: newName,
 			number: newNumber,
 			id: persons.length + 1,
 		};
 
-		setPersons([...persons, newPersonObj]);
-		setNewName("");
-		setNewNumber("");
+		phoneServices.create(newPersonObj).then((returnedPerson) => {
+			setPersons(persons.concat(returnedPerson));
+			setNewName("");
+			setNewNumber("");
+		});
+	};
+
+	// REMOVING INFORMATION FROM THE PHONE BOOK
+	const handleRemove = (id) => {
+		const personName = persons.find((p) => p.id === id).name;
+
+		window.confirm(`Remove ${personName} from the phonebook?`) &&
+			phoneServices.removePerson(id).then((returnedPerson) => {
+				setPersons(persons.filter((p) => p.id !== id));
+			});
 	};
 
 	// Input that filters out the list of names by their input name.
@@ -96,14 +147,30 @@ const App = () => {
 	// Show all phonebook name and numbers based if the fitlered input is empty or not.
 
 	const showAll = () =>
-		persons.map((person) => <PersonInfo key={person.id} person={person} />);
+		persons.map((person) => (
+			<PersonInfo
+				key={person.id}
+				person={person}
+				handleRemoveClick={() => {
+					handleRemove(person.id);
+				}}
+			/>
+		));
 
 	const showFiltered = () => {
 		return persons
 			.filter((person) =>
 				person.name.toLowerCase().includes(filteredInput.toLowerCase())
 			)
-			.map((p) => <PersonInfo key={p.id} person={p} />);
+			.map((p) => (
+				<PersonInfo
+					key={p.id}
+					person={p}
+					handleRemoveClick={() => {
+						handleRemove(p.id);
+					}}
+				/>
+			));
 	};
 
 	return (
@@ -124,11 +191,11 @@ const App = () => {
 			/>
 			<h2>Numbers</h2>
 			{/* <ul>{!filteredInput ? showAll() : showFiltered()}</ul> */}
-				<Persons
-					filteredInput={filteredInput}
-					showAllFnc={showAll}
-					showFilteredFnc={showFiltered}
-				/>
+			<Persons
+				filteredInput={filteredInput}
+				showAllFnc={showAll}
+				showFilteredFnc={showFiltered}
+			/>
 		</div>
 	);
 };
