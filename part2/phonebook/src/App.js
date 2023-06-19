@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from 'axios';
+
 
 // Creation of components
 const Filter = ({ inputValue, handleInputChange }) => (
@@ -45,7 +47,7 @@ const Persons = ({ filteredInput, showAllFnc, showFilteredFnc }) => {
 	return <ul>{!filteredInput ? showAllFnc() : showFilteredFnc()}</ul>;
 };
 
-const App = () => {
+const App = () => { 
 	const [persons, setPersons] = useState([
 		{ name: "Arto Hellas", number: "040-123456", id: 1 },
 		{ name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
