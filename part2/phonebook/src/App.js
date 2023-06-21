@@ -68,6 +68,7 @@ const App = () => {
 	const [newNumber, setNewNumber] = useState('');
 	const [filteredInput, setFilteredInput] = useState('');
 	const [notifMessage, setNotifMessage] = useState('test');
+	const [notifStatus, setNotifStatus] = useState(true); // returns true if success, false otherwise (error);
 
 	// Get all persons data (name and number);
 	useEffect(() => {
@@ -103,17 +104,35 @@ const App = () => {
 							p.id !== targetPerson.id ? p : returnedPerson
 						)
 					);
+
+					// Update notification message for 5secs
+					setNotifMessage(
+						`updated ${newName}'s number to ${newNumber}`
+					);
+					setNotifStatus(true);
+					setTimeout(() => {
+						setNotifMessage('');
+					}, 5000);
+				})
+				.catch(error => {
+					// update lists of phonebook again (rerender)
+					phoneServices.getAll().then(currentData => {
+						setPersons(currentData);
+					});
+
+					// set error message and squash error.
+					setNotifMessage(
+						`Information of ${newName}has already been removed from the server`
+					);
+					setNotifStatus(false);
+					setTimeout(() => {
+						setNotifMessage('');
+					}, 5000);
 				});
 
 			// reset all the input values
 			setNewName('');
 			setNewNumber('');
-
-			// Update notification message for 5secs
-			setNotifMessage(`updated ${newName}'s number to ${newNumber}`);
-			setTimeout(() => {
-				setNotifMessage('');
-			}, 5000);
 		};
 
 		if (hasExistingName()) {
@@ -134,7 +153,10 @@ const App = () => {
 			setPersons(persons.concat(returnedPerson));
 			setNewName('');
 			setNewNumber('');
+
+			// update notification for 5 seconds.
 			setNotifMessage(`added ${newPersonObj.name}`);
+			setNotifStatus(true);
 			setTimeout(() => {
 				setNotifMessage('');
 			}, 5000);
@@ -188,7 +210,10 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
-			<Notification message={notifMessage} />
+			<Notification
+				status={notifStatus}
+				message={notifMessage}
+			/>
 			<Filter
 				inputValue={filteredInput}
 				handleInputChange={handleFilteredInput}
