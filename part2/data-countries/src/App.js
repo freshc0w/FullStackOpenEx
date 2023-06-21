@@ -14,22 +14,52 @@ const Search = ({ countryName, handleInputChange }) => {
 	);
 };
 
-const ResultList = ({ countries }) => {
+const ResultList = ({ countries, handleClick }) => {
 	if (typeof countries === 'string') return <h2>{countries}</h2>;
 	return (
 		<ul>
 			{countries.map(country => (
-				<li key={country.id}>{country.name}</li>
+				<li key={country.id}>
+					{country.name}{' '}
+					<button onClick={() => handleClick(country.name)}>
+						Show
+					</button>
+				</li>
 			))}
 		</ul>
+	);
+};
+
+const CountryInfo = ({ country }) => {
+	console.log(country);
+
+	return (
+		<div>
+			<h1>{country.name}</h1>
+			<p>Capital: {country.capital}</p>
+			<p>Area: {country.area}</p>
+
+			<h3>Languages</h3>
+			<ul>
+				{country.languages.map((lang, idx) => (
+					<li key={idx + 1}>{lang}</li>
+				))}
+			</ul>
+
+			<img src={country.flag} alt="country flag" />
+		</div>
 	);
 };
 
 function App() {
 	const [newCountryName, setNewCountryName] = useState('');
 	const [currentCountries, setCurrentCountries] = useState(null);
+	const [currentCountryInfo, setCurrentCountryInfo] = useState(null);
 
 	useEffect(() => {
+		// Make sure to set the display current country info to false
+		setCurrentCountryInfo(null);
+
 		countriesServices.getAllCountries().then(returnedData => {
 			const filteredCountries = returnedData
 				.filter(c =>
@@ -40,6 +70,7 @@ function App() {
 				.map(c => {
 					return { name: c.name.common };
 				});
+
 			const resCountries = filteredCountries.map(c => {
 				return { ...c, id: filteredCountries.indexOf(c) + 1 };
 			});
@@ -56,6 +87,21 @@ function App() {
 		setNewCountryName(e.target.value);
 	};
 
+	const handleClick = cName => {
+		console.log(cName);
+		countriesServices.getCountry(cName).then(returnedInfo => {
+			console.log(returnedInfo);
+			const countryObj = {
+				name: cName,
+				capital: returnedInfo.capital[0] || 'no capital',
+				area: returnedInfo.area,
+				languages: Object.values(returnedInfo.languages),
+				flag: returnedInfo.flags.png,
+			};
+			setCurrentCountryInfo(countryObj);
+		});
+	};
+
 	return (
 		<div>
 			<Search
@@ -64,8 +110,13 @@ function App() {
 			/>
 			{!newCountryName ? (
 				'Search for a country using the provided search bar above'
+			) : !currentCountryInfo ? (
+				<ResultList
+					countries={currentCountries}
+					handleClick={handleClick}
+				/>
 			) : (
-				<ResultList countries={currentCountries} />
+				<CountryInfo country={currentCountryInfo} />
 			)}
 		</div>
 	);
