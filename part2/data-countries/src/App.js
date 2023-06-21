@@ -46,7 +46,10 @@ const CountryInfo = ({ country }) => {
 				))}
 			</ul>
 
-			<img src={country.flag} alt="country flag" />
+			<img
+				src={country.flag}
+				alt="country flag"
+			/>
 		</div>
 	);
 };
@@ -90,7 +93,6 @@ function App() {
 	const handleClick = cName => {
 		console.log(cName);
 		countriesServices.getCountry(cName).then(returnedInfo => {
-			console.log(returnedInfo);
 			const countryObj = {
 				name: cName,
 				capital: returnedInfo.capital[0] || 'no capital',
