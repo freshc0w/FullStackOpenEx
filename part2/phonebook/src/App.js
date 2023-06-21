@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import phoneServices from "./services/phones";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import phoneServices from './services/phones';
+import Notification from './components/Notification';
 
 // Creation of components
 const Filter = ({ inputValue, handleInputChange }) => (
 	<>
-		Filter shown with:{" "}
+		Filter shown with:{' '}
 		<input
 			value={inputValue}
 			onChange={handleInputChange}
@@ -13,7 +14,7 @@ const Filter = ({ inputValue, handleInputChange }) => (
 	</>
 );
 
-const PersonForm = (props) => {
+const PersonForm = props => {
 	const {
 		newName,
 		handleNameChange,
@@ -25,14 +26,14 @@ const PersonForm = (props) => {
 	return (
 		<form>
 			<div>
-				name:{" "}
+				name:{' '}
 				<input
 					value={newName}
 					onChange={handleNameChange}
 				/>
 			</div>
 			<div>
-				number:{" "}
+				number:{' '}
 				<input
 					value={newNumber}
 					onChange={handleNumberChange}
@@ -63,49 +64,56 @@ const Persons = ({ filteredInput, showAllFnc, showFilteredFnc }) => {
 
 const App = () => {
 	const [persons, setPersons] = useState([]);
-	const [newName, setNewName] = useState("");
-	const [newNumber, setNewNumber] = useState("");
-	const [filteredInput, setFilteredInput] = useState("");
+	const [newName, setNewName] = useState('');
+	const [newNumber, setNewNumber] = useState('');
+	const [filteredInput, setFilteredInput] = useState('');
+	const [notifMessage, setNotifMessage] = useState('test');
 
 	// Get all persons data (name and number);
 	useEffect(() => {
-		phoneServices.getAll().then((initialData) => {
+		phoneServices.getAll().then(initialData => {
 			setPersons(initialData);
 		});
 	}, []);
 
-	const handleNameChange = (e) => {
+	const handleNameChange = e => {
 		setNewName(e.target.value);
 	};
 
-	const handleNumberChange = (e) => {
+	const handleNumberChange = e => {
 		setNewNumber(e.target.value);
 	};
 
 	const hasExistingName = () =>
-		persons.some((person) => person.name === newName);
+		persons.some(person => person.name === newName);
 
 	// ADDING INFORMATION TO THE PHONE BOOK
-	const handleAddClick = (e) => {
+	const handleAddClick = e => {
 		e.preventDefault();
 
 		const updatePersonNumber = () => {
-			const targetPerson = persons.find((p) => p.name === newName);
+			const targetPerson = persons.find(p => p.name === newName);
 			const changedPerson = { ...targetPerson, number: newNumber };
 
 			phoneServices
 				.update(targetPerson.id, changedPerson)
-				.then((returnedPerson) => {
+				.then(returnedPerson => {
 					setPersons(
-						persons.map((p) =>
+						persons.map(p =>
 							p.id !== targetPerson.id ? p : returnedPerson
 						)
 					);
 				});
 
-            // reset all the input values
-            setNewName("");
-            setNewNumber("");
+			// reset all the input values
+			setNewName('');
+			setNewNumber('');
+
+			// Update notification message for 5secs
+			setNotifMessage(`updated ${newName}'s number to ${newNumber}`);
+			setTimeout(() => {
+				setNotifMessage('');
+			}, 5000);
 		};
 
 		if (hasExistingName()) {
@@ -122,32 +130,36 @@ const App = () => {
 			id: persons.length + 1,
 		};
 
-		phoneServices.create(newPersonObj).then((returnedPerson) => {
+		phoneServices.create(newPersonObj).then(returnedPerson => {
 			setPersons(persons.concat(returnedPerson));
-			setNewName("");
-			setNewNumber("");
+			setNewName('');
+			setNewNumber('');
+			setNotifMessage(`added ${newPersonObj.name}`);
+			setTimeout(() => {
+				setNotifMessage('');
+			}, 5000);
 		});
 	};
 
 	// REMOVING INFORMATION FROM THE PHONE BOOK
-	const handleRemove = (id) => {
-		const personName = persons.find((p) => p.id === id).name;
+	const handleRemove = id => {
+		const personName = persons.find(p => p.id === id).name;
 
 		window.confirm(`Remove ${personName} from the phonebook?`) &&
-			phoneServices.removePerson(id).then((returnedPerson) => {
-				setPersons(persons.filter((p) => p.id !== id));
+			phoneServices.removePerson(id).then(returnedPerson => {
+				setPersons(persons.filter(p => p.id !== id));
 			});
 	};
 
 	// Input that filters out the list of names by their input name.
-	const handleFilteredInput = (e) => {
+	const handleFilteredInput = e => {
 		setFilteredInput(e.target.value);
 	};
 
 	// Show all phonebook name and numbers based if the fitlered input is empty or not.
 
 	const showAll = () =>
-		persons.map((person) => (
+		persons.map(person => (
 			<PersonInfo
 				key={person.id}
 				person={person}
@@ -159,10 +171,10 @@ const App = () => {
 
 	const showFiltered = () => {
 		return persons
-			.filter((person) =>
+			.filter(person =>
 				person.name.toLowerCase().includes(filteredInput.toLowerCase())
 			)
-			.map((p) => (
+			.map(p => (
 				<PersonInfo
 					key={p.id}
 					person={p}
@@ -176,6 +188,7 @@ const App = () => {
 	return (
 		<div>
 			<h2>Phonebook</h2>
+			<Notification message={notifMessage} />
 			<Filter
 				inputValue={filteredInput}
 				handleInputChange={handleFilteredInput}
