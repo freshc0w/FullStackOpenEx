@@ -14,7 +14,7 @@ app.use(express.static('build'));
 let notes = [
 	{
 		id: 1,
-		content: 'HTML is really easy',
+		content: 'HTML is easy',
 		important: true,
 	},
 	{
