@@ -8,6 +8,9 @@ app.use(express.json());
 // CORS policy
 app.use(cors());
 
+// static website from react build
+app.use(express.static('build'));
+
 let notes = [
 	{
 		id: 1,
