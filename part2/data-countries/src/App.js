@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useImperativeHandle } from 'react';
 import countriesServices from './services/api';
 
 const Search = ({ countryName, handleInputChange }) => {
@@ -58,6 +58,7 @@ function App() {
 	const [newCountryName, setNewCountryName] = useState('');
 	const [currentCountries, setCurrentCountries] = useState(null);
 	const [currentCountryInfo, setCurrentCountryInfo] = useState(null);
+    
 
 	useEffect(() => {
 		// Make sure to set the display current country info to false
