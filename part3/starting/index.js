@@ -1,8 +1,12 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 
 // for RECEIVING DATA: POST
 app.use(express.json());
+
+// CORS policy
+app.use(cors());
 
 let notes = [
 	{
@@ -53,25 +57,25 @@ app.delete('/api/notes/:id', (request, response) => {
 // Configuring a new id based on the length of notes
 const generateId = () => {
 	const maxId = notes.length > 0 ? Math.max(...notes.map(n => n.id)) : 0;
-    return maxId + 1;
+	return maxId + 1;
 };
 
 // Receiving resources/data
 app.post('/api/notes', (request, response) => {
-    const body = request.body;
+	const body = request.body;
 
-    // If no content was found in the body, generate 404 bad request.
-    if(!body.content) {
-        return response.status(400).json({
-            error: 'content missing'
-        })
-    }
+	// If no content was found in the body, generate 404 bad request.
+	if (!body.content) {
+		return response.status(400).json({
+			error: 'content missing',
+		});
+	}
 
-    const note = {
-        content: body.content,
-        important: body.important || false,
-        id: generateId(),
-    }
+	const note = {
+		content: body.content,
+		important: body.important || false,
+		id: generateId(),
+	};
 
 	// Add to object
 	notes = notes.concat(note);
@@ -80,7 +84,10 @@ app.post('/api/notes', (request, response) => {
 });
 
 // Configuration
-const PORT = 3001;
+// const PORT = 3001;
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
+	console.log(process.env.PORT)
 	console.log(`Server running on PORT ${PORT}`);
 });
