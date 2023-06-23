@@ -6,8 +6,36 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 
+// CORS
+
 // Connecting to mongodb (database)
 const Note = require('./models/note');
+
+/**
+ * MIDDLEWARE
+ */
+// order of middleware matters !
+const requestLogger = (request, response, next) => {
+	console.log('Method:', request.method);
+	console.log('Path:  ', request.path);
+	console.log('Body:  ', request.body);
+	console.log('---');
+	next();
+};
+
+const unknownEndpoint = (request, response) => {
+	response.status(404).send({ error: 'unknown endpoint' });
+};
+
+const errorHandler = (error, request, response, next) => {
+	console.error(error.message);
+
+	if (error.name === 'CastError') {
+		return response.status(400).send({ error: 'malformatted id' });
+	}
+
+	next(error);
+};
 
 // for RECEIVING DATA: POST
 app.use(express.json());
@@ -66,18 +94,40 @@ app.get('/api/notes/:id', (request, response) => {
 // (w/ db)
 app.get('/api/notes/:id', (req, res) => {
 	// mongoose has a findById method
-	Note.findById(req.params.id).then(note => {
+	Note.findById(req.params.id)
+		.then(note => {
+			// Need to check that the note with the id exists.
+			// Note will return null if it doesn't
+			note ? res.json(note) : res.status(404).end();
+		})
+		// THis error handling method is WITHOUT middleware
+		// .catch(err => {
+		// 	console.log(err);
 
-		
-		res.json(note);
-	})
-})
+		// 	// If id doesn't match MongoDB's format
+		// 	res.status(400).send({ error: 'malformatted id' });
+		// });
 
-// Deleting a resource
+		// with middleware:
+		.catch(err => next(err));
+});
+
+// Deleting a resource (W/O db)
+/*
 app.delete('/api/notes/:id', (request, response) => {
 	const id = Number(request.params.id);
 	notes = notes.filter(note => note.id !== id);
 	response.status(204).end();
+});
+*/
+
+// Deleting a resource (WITH DB)
+app.delete('/api/notes/:id', (req, res, next) => {
+	Note.findByIdAndRemove(req.params.id)
+		.then(result => {
+			res.status(204).end();
+		})
+		.catch(err => next(err));
 });
 
 // Configuring a new id based on the length of notes
@@ -123,12 +173,32 @@ app.post('/api/notes', (req, res) => {
 	const note = new Note({
 		content: body.content,
 		important: body.important || false,
-	})
+	});
 
 	note.save().then(savedNote => {
 		res.json(savedNote);
-	})
+	});
 });
+
+// Toggling importance of note (with db)
+app.put('/api/notes/:id', (req, res, next) => {
+	const body = req.body;
+
+	const note = {
+		content: body.content,
+		important: body.important,
+	};
+
+	Note.findByIdAndUpdate(req.params.id, note, { new: true })
+		.then(updatedNote => {
+			res.json(updatedNote);
+		})
+		.catch(err => next(err));
+});
+
+// last middlewares and order matters
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 // Configuration
 // const PORT = 3001;
