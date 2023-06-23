@@ -10,3 +10,12 @@ Content-Type: application/json
     "content": "VSCODE rest client",
     "important": true
 }
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+    "content": "Database check",
+    "important": false
+}

@@ -7,7 +7,7 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2];
 
-const url = `mongodb+srv://freshc0w:${password}@fullstackopenex.ki7wocb.mongodb.net/noteApp?retryWrites=true&w=majority`;
+const url = `mongodb+srv://freshc0w:${password}@cluster0.ox1vutg.mongodb.net/note?retryWrites=true&w=majority`;
 
 mongoose.set('strictQuery', false);
 mongoose.connect(url);
@@ -20,15 +20,15 @@ const noteSchema = new mongoose.Schema({
 const Note = mongoose.model('Note', noteSchema);
 
 const note = new Note({
-	content: 'CSS is HARD!',
-	important: false,
+	content: 'Call-back fncs suck!',
+	important: true,
 });
 
 // Generating new notes and saving it to db
-// note.save().then(result => {
-// 	console.log('note saved!');
-// 	mongoose.connection.close();
-// });
+note.save().then(result => {
+	console.log('note saved!');
+	mongoose.connection.close();
+});
 
 // Fetching objects from db
 // Note.find({}).then(result => {
@@ -39,9 +39,9 @@ const note = new Note({
 // })
 
 // Fetching only important notes
-Note.find({ important: true }).then(result =>{
-    result.forEach(n => {
-        console.log(n);
-    })
-    mongoose.connection.close();
-})
+// Note.find({ important: true }).then(result =>{
+//     result.forEach(n => {
+//         console.log(n);
+//     })
+//     mongoose.connection.close();
+// })
