@@ -32,6 +32,9 @@ const errorHandler = (error, request, response, next) => {
 
 	if (error.name === 'CastError') {
 		return response.status(400).send({ error: 'malformatted id' });
+	} else if (error.name === 'ValidationError') {
+		// Invalid params from mongoose validation schema
+		return response.status(400).json({ error: error.message });
 	}
 
 	next(error);
@@ -163,7 +166,7 @@ const generateId = () => {
  */
 
 // (new way with db)
-app.post('/api/notes', (req, res) => {
+app.post('/api/notes', (req, res, next) => {
 	const body = req.body;
 
 	if (body.content === undefined) {
@@ -175,21 +178,24 @@ app.post('/api/notes', (req, res) => {
 		important: body.important || false,
 	});
 
-	note.save().then(savedNote => {
-		res.json(savedNote);
-	});
+	note.save()
+		.then(savedNote => {
+			res.json(savedNote);
+		})
+		.catch(error => next(error));
 });
 
 // Toggling importance of note (with db)
 app.put('/api/notes/:id', (req, res, next) => {
-	const body = req.body;
+	const { content, important } = req.body;
 
-	const note = {
-		content: body.content,
-		important: body.important,
-	};
-
-	Note.findByIdAndUpdate(req.params.id, note, { new: true })
+	// Normally we could've just declared a note variable and put it in
+	// the params. But because we need to validate, destructuring is better
+	Note.findByIdAndUpdate(
+		req.params.id,
+		{ content, important },
+		{ new: true, runValidators: true, context: 'query' }
+	)
 		.then(updatedNote => {
 			res.json(updatedNote);
 		})

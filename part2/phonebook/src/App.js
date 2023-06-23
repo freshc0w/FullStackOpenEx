@@ -149,18 +149,27 @@ const App = () => {
 			id: persons.length + 1,
 		};
 
-		phoneServices.create(newPersonObj).then(returnedPerson => {
-			setPersons(persons.concat(returnedPerson));
-			setNewName('');
-			setNewNumber('');
+		phoneServices
+			.create(newPersonObj)
+			.then(returnedPerson => {
+				setPersons(persons.concat(returnedPerson));
+				setNewName('');
+				setNewNumber('');
 
-			// update notification for 5 seconds.
-			setNotifMessage(`added ${newPersonObj.name}`);
-			setNotifStatus(true);
-			setTimeout(() => {
-				setNotifMessage('');
-			}, 5000);
-		});
+				// update notification for 5 seconds.
+				setNotifMessage(`added ${newPersonObj.name}`);
+				setNotifStatus(true);
+				setTimeout(() => {
+					setNotifMessage('');
+				}, 5000);
+			})
+			.catch(error => {
+				console.log(error.response.data.error);
+				setNotifMessage(error.reponse.data.error);
+				setTimeout(() => {
+					setNotifMessage('');
+				}, 5000);
+			});
 	};
 
 	// REMOVING INFORMATION FROM THE PHONE BOOK
