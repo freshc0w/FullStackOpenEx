@@ -164,10 +164,13 @@ const App = () => {
 				}, 5000);
 			})
 			.catch(error => {
+				setNotifStatus(false);
+				setNotifMessage(`${error.response.data.error}`);
 				console.log(error.response.data.error);
-				setNotifMessage(error.reponse.data.error);
+
 				setTimeout(() => {
 					setNotifMessage('');
+					setNotifStatus(true);
 				}, 5000);
 			});
 	};
