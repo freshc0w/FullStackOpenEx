@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js",
-    "test": "jest --verbose"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
   "author": "freshc0w",
   "license": "ISC",
@@ -17,10 +17,6 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
-    "just": "^0.1.8",
     "nodemon": "^2.0.22"
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }
