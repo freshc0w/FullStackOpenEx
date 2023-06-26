@@ -1,6 +1,10 @@
 const config = require('./utils/config');
 const express = require('express');
-require('express-async-errors');
+MONGODB_URI = mongodb+srv://freshc0w:jNMWw7bPjur1OLAa@clustor0.ox1vutg.mongodb.net/note?retryWrites=true&w=majority
+
+TEST_MONGODB_URI = mongodb+srv://freshc0w:jNMWw7bPjur1OLAa@clustor0.ox1vutg.mongodb.net/testNoteApp?retryWrites=true&w=majority
+
+PORT = 3001 
 const app = express();
 const cors = require('cors');
 const notesRouter = require('./controllers/notes');
