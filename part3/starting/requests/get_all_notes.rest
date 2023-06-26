@@ -54,3 +54,13 @@ Content-Type: application/json
     "username": "root",
     "password": "salainen"
 }
+
+###
+POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/notes
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY0OTkyMzNkODk5YTY0YTE3MGMyODJhOSIsImlhdCI6MTY4Nzc2MzUyOX0._H7oxRC5sm-6kOYu1LpWHePTA5qXznf2uxSrqBcGXbc
+
+{
+    "content": "BATTTTTT",
+    "important": true
+}

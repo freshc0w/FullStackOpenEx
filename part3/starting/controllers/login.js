@@ -13,8 +13,7 @@ loginRouter.post('/', async (req, res) => {
 			: await bcrypt.compare(password, user.passwordHash);
 
 	if (!(user && passwordCorrect)) {
-
-        // status 401 unauthorized
+		// status 401 unauthorized
 		return res.status(401).json({
 			error: 'invalid username or password',
 		});
@@ -25,7 +24,12 @@ loginRouter.post('/', async (req, res) => {
 		id: user._id,
 	};
 
-	const token = jwt.sign(userForToken, process.env.SECRET);
+    // token expires in 60*60 seconds, that is, in one hour
+    const token = jwt.sign(
+        userForToken,
+        process.env.SECRET,
+        { expiresIn: 60*60 }
+    )
 
 	res.status(200).send({ token, username: user.usernmae, name: user.name });
 });
