@@ -1,12 +1,26 @@
 GET http://localhost:3003/api/blogs
 
 ###
-POST http://localhost:3003/api/blogs
+POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3003.preview.app.github.dev/api/blogs
 Content-Type: application/json
 
 {
     "title": "CAT",
     "author": "Freshc0w",
     "url": "www.great.com",
-    "likes": 2
+    "likes": 2,
+    "userId": "64994ed695bf97f8b5a1966a"
+}
+
+###
+GET https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3003.preview.app.github.dev/api/users
+
+###
+POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3003.preview.app.github.dev/api/users
+Content-Type: application/json
+
+{
+    "username": "bat2",
+    "name": "Superuser",
+    "password": "salainen"
 }

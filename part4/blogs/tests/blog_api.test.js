@@ -3,10 +3,14 @@ const mongoose = require('mongoose');
 const app = require('../app');
 const api = supertest(app);
 
+// FOR USER TESTS
+const bcrypt = require('bcrypt');
+const User = require('../models/user');
+
 const helper = require('./test_helper');
 
 const Blog = require('../models/blog');
-const { describe } = require('node:test');
+// const { describe } = require('node:test');
 const baseUrl = '/api/blogs';
 
 beforeEach(async () => {
@@ -103,29 +107,64 @@ describe('deletion of a blog', () => {
 });
 
 describe('updating a blog', () => {
-    test('succeeds with valid data', async () => {
-        const updatedBlog = {
+	test('succeeds with valid data', async () => {
+		const updatedBlog = {
 			title: 'The Power of Positive Thinking',
 			author: 'Sophia Roberts',
 			url: 'https://www.example.com/the-power-of-positive-thinking',
 			likes: 742,
 		};
 
-        const blogAtStart = await helper.blogsInDb();
-        const blogToUpdate = blogAtStart[0];
-        expect(blogToUpdate.likes).toEqual(256);
+		const blogAtStart = await helper.blogsInDb();
+		const blogToUpdate = blogAtStart[0];
+		expect(blogToUpdate.likes).toEqual(256);
 
-        await api.put(`${baseUrl}/${blogToUpdate.id}`).send(updatedBlog).expect(200).expect('Content-Type', /application\/json/);
+		await api
+			.put(`${baseUrl}/${blogToUpdate.id}`)
+			.send(updatedBlog)
+			.expect(200)
+			.expect('Content-Type', /application\/json/);
 
-        const blogsAtEnd = await helper.blogsInDb();
-        expect(blogsAtEnd[0].id).toEqual(blogToUpdate.id)
-        
-        const blogLikes = blogsAtEnd.map(b => b.likes);
-        expect(blogLikes[0]).toEqual(742);
-    })
-})
+		const blogsAtEnd = await helper.blogsInDb();
+		expect(blogsAtEnd[0].id).toEqual(blogToUpdate.id);
 
+		const blogLikes = blogsAtEnd.map(b => b.likes);
+		expect(blogLikes[0]).toEqual(742);
+	});
+});
 
+// user tests
+describe('when there is initially one user in db', () => {
+	beforeEach(async () => {
+		await User.deleteMany({});
+
+		const passwordHash = await bcrypt.hash('sekret', 10);
+		const user = new User({ username: 'root', passwordHash });
+		await user.save();
+
+	});
+    test('creation succeeeds with a fresh username', async () => {
+        const userAtStart = await helper.usersInDb();
+
+        const newUser = {
+            username: 'mluukkai',
+            name: 'Matti Luukkainen',
+            password: 'salainen',
+        };
+
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const usersAtEnd = await helper.usersInDb()
+        expect(usersAtEnd).toHaveLength(userAtStart.length + 1)
+
+        const usernames = usersAtEnd.map(u => u.username);
+        expect(usernames).toContain(newUser.username);
+    });
+});
 
 afterAll(async () => {
 	await mongoose.connection.close();
