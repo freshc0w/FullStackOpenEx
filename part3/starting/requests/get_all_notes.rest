@@ -24,11 +24,33 @@ Content-Type: application/json
 GET https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/users
 
 ###
+GET https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/notes
+
+###
 POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/users
 Content-Type: application/json
 
 {
+    "username": "bat",
+    "name": "great",
+    "password": "salainen"
+}
+
+### 
+POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/notes
+Content-Type: application/json
+
+{
+    "content": "User id of the note creator is at the start sent along the request",
+    "important": true,
+    "userId": "6499233d899a64a170c282a9"
+}
+
+### 
+POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/login
+Content-Type: application/json
+
+{
     "username": "root",
-    "name": "Superuser",
     "password": "salainen"
 }
