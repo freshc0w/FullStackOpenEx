@@ -26,7 +26,7 @@ module.exports = mongoose.model('Note', noteSchema);
 
 
 
-/* PART 2-3 
+/* PART 2-3
 
 const mongoose = require('mongoose');
 
