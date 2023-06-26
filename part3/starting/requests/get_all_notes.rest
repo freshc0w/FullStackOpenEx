@@ -19,3 +19,16 @@ Content-Type: application/json
     "content": "Database check",
     "important": false
 }
+
+###
+GET https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/users
+
+###
+POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3001.preview.app.github.dev/api/users
+Content-Type: application/json
+
+{
+    "username": "root",
+    "name": "Superuser",
+    "password": "salainen"
+}

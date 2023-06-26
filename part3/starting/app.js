@@ -1,13 +1,12 @@
 const config = require('./utils/config');
 const express = require('express');
-MONGODB_URI = mongodb+srv://freshc0w:jNMWw7bPjur1OLAa@clustor0.ox1vutg.mongodb.net/note?retryWrites=true&w=majority
 
-TEST_MONGODB_URI = mongodb+srv://freshc0w:jNMWw7bPjur1OLAa@clustor0.ox1vutg.mongodb.net/testNoteApp?retryWrites=true&w=majority
-
-PORT = 3001 
 const app = express();
 const cors = require('cors');
+
 const notesRouter = require('./controllers/notes');
+const usersRouter = require('./controllers/users');
+
 const middleware = require('./utils/middleware');
 const logger = require('./utils/logger');
 const mongoose = require('mongoose');
@@ -31,6 +30,7 @@ app.use(express.json());
 app.use(middleware.requestLogger);
 
 app.use('/api/notes', notesRouter);
+app.use('/api/users', usersRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);
