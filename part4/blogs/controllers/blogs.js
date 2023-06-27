@@ -19,9 +19,10 @@ blogsRouter.get('/:id', async (req, res) => {
 // authorization config
 const getTokenFrom = req => {
 	const authorization = req.get('authorization');
-	if (authorization && authorization.startsWith('Bearer '))
-		return authorization.replace('Bearer ', '');
-	return null;
+
+	return authorization && authorization.startsWith('Bearer ')
+		? authorization.replace('Bearer ', '')
+		: null;
 };
 
 blogsRouter.post('/', async (req, res) => {
@@ -30,6 +31,8 @@ blogsRouter.post('/', async (req, res) => {
 	const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET);
 	if (!decodedToken.id)
 		return res.status(401).json({ error: 'token invalid' });
+
+	// Find the user by it's id and track the creator of the blog thru the creation of the blog json's info
 	const user = await User.findById(decodedToken.id);
 
 	const blog = new Blog({
