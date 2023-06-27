@@ -1,7 +1,7 @@
 GET http://localhost:3003/api/blogs
 
 ###
-POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3003.preview.app.github.dev/api/blogs
+POST localhost:3003/api/blogs
 Content-Type: application/json
 
 {
@@ -13,14 +13,38 @@ Content-Type: application/json
 }
 
 ###
-GET https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3003.preview.app.github.dev/api/users
+GET http://localhost:3003/api/users
 
 ###
-POST https://freshc0w-miniature-space-giggle-6657x5g5rw934q97-3003.preview.app.github.dev/api/users
+POST http://localhost:3003/api/users
 Content-Type: application/json
 
 {
-    "username": "bat2",
+    "username": "bat3",
     "name": "Superuser",
     "password": "salainen"
 }
+
+###
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+    "username": "bat3",
+    "password": "salainen"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhdDMiLCJpZCI6IjY0OWE1MTdkOGVjNTI5NDcwNzc1MTQxYSIsImlhdCI6MTY4NzgzNTk5NywiZXhwIjoxNjg3ODM5NTk3fQ.FVJssFmSF2oO3cH3Uuat2k2bJq-YvjRA7WCD959EPDE
+
+{
+    "title": "CA2T",
+    "author": "Freshc0w",
+    "url": "www.great.com",
+    "likes": 2
+}
+
+###
+GET http://localhost:3003/api/blogs

@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
 	],
 });
 
+// unique username
 userSchema.plugin(uniqueValidator);
 
 userSchema.set('toJSON', {

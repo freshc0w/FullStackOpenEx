@@ -35,14 +35,18 @@ const errorHandler = (error, request, response, next) => {
 	} else if (error.name === 'ValidationError') {
 		// Invalid params from mongoose validation schema
 		return response.status(400).json({ error: error.message });
+	} else if (error.name === 'JsonWebTokenError') {
+		return response.status(400).json({ error: error.message });
+	} else if (error.name === 'TokenExpiredError') {
+		return response.status(401).json({ error: 'token expired' });
 	}
 
 	next(error);
 };
 
 module.exports = {
-    reqMorganLogger,
-    requestLogger,
-    unknownEndpoint,
-    errorHandler,
-}
+	reqMorganLogger,
+	requestLogger,
+	unknownEndpoint,
+	errorHandler,
+};
