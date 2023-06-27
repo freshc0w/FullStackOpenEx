@@ -51,9 +51,30 @@ blogsRouter.post('/', async (req, res) => {
 	res.json(savedBlog);
 });
 
+// blogsRouter.delete('/:id', async (req, res) => {
+// 	await Blog.findByIdAndRemove(req.params.id);
+// 	res.status(204).end();
+// });
+
 blogsRouter.delete('/:id', async (req, res) => {
-	await Blog.findByIdAndRemove(req.params.id);
-	res.status(204).end();
+	const blog = await Blog.findById(req.params.id);
+
+	// retrieve logged in user's id
+	const decodedToken = jwt.verify(req.token, process.env.SECRET);
+	if (!decodedToken.id)
+		return res.status(401).json({ error: 'token invalid' });
+	const loggedUserId = decodedToken.id.toString();
+	
+	if (blog.user.toString() === loggedUserId) {
+		await Blog.findByIdAndRemove(req.params.id);
+		res.status(204).end();
+	} else {
+		return res
+			.status(400)
+			.json({
+				error: 'Cannot delete blog that was not created by logged in user.',
+			});
+	}
 });
 
 blogsRouter.put('/:id', async (req, res) => {
