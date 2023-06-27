@@ -3,6 +3,8 @@ const Blog = require('../models/blog');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
+const logger = require('../utils/logger');
+
 blogsRouter.get('/', async (req, res) => {
 	const blogs = await Blog.find({}).populate('user', {
 		username: 1,
@@ -29,12 +31,13 @@ blogsRouter.post('/', async (req, res) => {
 	const body = req.body;
 
 	// req.token is from middleware
-	const decodedToken = jwt.verify(req.token, process.env.SECRET);
-	if (!decodedToken.id)
-		return res.status(401).json({ error: 'token invalid' });
+	// const decodedToken = jwt.verify(req.token, process.env.SECRET);
+	// if (!decodedToken.id)
+	// 	return res.status(401).json({ error: 'token invalid' });
 
 	// Find the user by it's id and track the creator of the blog thru the creation of the blog json's info
-	const user = await User.findById(decodedToken.id);
+	// get user from request object
+	const user = req.user
 
 	const blog = new Blog({
 		title: body.title,
@@ -58,14 +61,11 @@ blogsRouter.post('/', async (req, res) => {
 
 blogsRouter.delete('/:id', async (req, res) => {
 	const blog = await Blog.findById(req.params.id);
-
-	// retrieve logged in user's id
-	const decodedToken = jwt.verify(req.token, process.env.SECRET);
-	if (!decodedToken.id)
-		return res.status(401).json({ error: 'token invalid' });
-	const loggedUserId = decodedToken.id.toString();
 	
-	if (blog.user.toString() === loggedUserId) {
+	// get user from request object
+	const user = req.user;
+
+	if (blog.user.toString() === user.id.toString()) {
 		await Blog.findByIdAndRemove(req.params.id);
 		res.status(204).end();
 	} else {

@@ -1,4 +1,6 @@
 const logger = require('./logger');
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 
 // Middleware
 const requestLogger = (req, res, next) => {
@@ -26,9 +28,25 @@ const reqMorganLogger = (tokens, req, res) => {
 // extracting token for authorization
 const tokensExtractor = (req, res, next) => {
 	const authorization = req.get('authorization');
-	req.token = authorization && authorization.startsWith('Bearer ')
-		? authorization.replace('Bearer ', '')
-		: null;
+	req.token =
+		authorization && authorization.startsWith('Bearer ')
+			? authorization.replace('Bearer ', '')
+			: null;
+	next();
+};
+
+// Store current user to req.user
+const userExtractor = async (req, res, next) => {
+	if(!req.token) {
+		next();
+		return;
+	}
+	//req.token is from middleware.tokensExtractor
+	const decodedToken = jwt.verify(req.token, process.env.SECRET);
+	if (!decodedToken.id)
+		return res.status(401).json({ error: 'token invalid' });
+	
+	req.user = await User.findById(decodedToken.id);
 	next();
 };
 
@@ -57,6 +75,7 @@ module.exports = {
 	reqMorganLogger,
 	requestLogger,
 	tokensExtractor,
+	userExtractor,
 	unknownEndpoint,
 	errorHandler,
 };
