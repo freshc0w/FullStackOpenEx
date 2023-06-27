@@ -17,18 +17,19 @@ blogsRouter.get('/:id', async (req, res) => {
 });
 
 // authorization config
-const getTokenFrom = req => {
-	const authorization = req.get('authorization');
+// const getTokenFrom = req => {
+// 	const authorization = req.get('authorization');
 
-	return authorization && authorization.startsWith('Bearer ')
-		? authorization.replace('Bearer ', '')
-		: null;
-};
+// 	return authorization && authorization.startsWith('Bearer ')
+// 		? authorization.replace('Bearer ', '')
+// 		: null;
+// };
 
 blogsRouter.post('/', async (req, res) => {
 	const body = req.body;
 
-	const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET);
+	// req.token is from middleware
+	const decodedToken = jwt.verify(req.token, process.env.SECRET);
 	if (!decodedToken.id)
 		return res.status(401).json({ error: 'token invalid' });
 

@@ -33,6 +33,8 @@ app.use(express.json());
 app.use(middleware.requestLogger);
 app.use(morgan(middleware.reqMorganLogger));
 
+app.use(middleware.tokensExtractor);
+
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/login', loginRouter);

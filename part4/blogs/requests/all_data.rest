@@ -40,7 +40,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhdDMiLCJpZCI6IjY0OWE2NDg5NDU1NTRhZWRiYzRjMDA5MiIsImlhdCI6MTY4NzgzOTkyMywiZXhwIjoxNjg3ODQzNTIzfQ.ZtnjLKRajJHtft6yA6Id4XqoOHEyoi5mWgZeL18TtFg
 
 {
-    "title": "CA2T",
+    "title": "CA7T",
     "author": "Freshc0w",
     "url": "www.great.com",
     "likes": 2
