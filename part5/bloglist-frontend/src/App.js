@@ -3,10 +3,30 @@ import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 
-const Notification = ({ message }) => {
+const Notification = ({ errorStatus, message }) => {
+	const errorStyle = {
+		color: 'red',
+		background: 'lightgrey',
+		fontSize: '20px',
+		borderStyle: 'solid',
+		borderRadius: '5px',
+		padding: '10px',
+		marginBottom: '10px',
+	};
+
+	const successStyle = {
+		color: 'green',
+		background: 'lightgrey',
+		fontSize: '20px',
+		borderStyle: 'solid',
+		borderRadius: '5px',
+		padding: '10px',
+		marginBottom: '10px',
+	};
+
 	if (message === null) return null;
 
-	return <div className="error">{message}</div>;
+	return <div style={errorStatus ? errorStyle : successStyle}>{message}</div>;
 };
 
 const Note = ({ note, toggleImportance }) => {
@@ -21,11 +41,15 @@ const Note = ({ note, toggleImportance }) => {
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
-	const [newNote, setNewNote] = useState('a new note...');
-	const [errorMessage, setErrorMessage] = useState(null);
+	const [errorMessage, setNotifMessage] = useState(null);
+	const [errorStatus, setErrorStatus] = useState(false);
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [user, setUser] = useState(null);
+
+	const [blogTitle, setBlogTitle] = useState('');
+	const [blogAuthor, setBlogAuthor] = useState('');
+	const [blogUrl, setBlogUrl] = useState('');
 
 	useEffect(() => {
 		blogService.getAll().then(blogs => setBlogs(blogs));
@@ -59,9 +83,11 @@ const App = () => {
 			setUsername('');
 			setPassword('');
 		} catch (err) {
-			setErrorMessage('Wrong credentials');
+      setErrorStatus(true);
+			setNotifMessage('wrong username or password');
+
 			setTimeout(() => {
-				setErrorMessage(null);
+				setNotifMessage(null);
 			}, 5000);
 		}
 	};
@@ -90,6 +116,57 @@ const App = () => {
 		</form>
 	);
 
+	const handleAddBlog = async e => {
+		e.preventDefault();
+
+		const newBlogObj = {
+			title: blogTitle,
+			author: blogAuthor,
+			url: blogUrl,
+		};
+
+		const blog = await blogService.create(newBlogObj);
+    setErrorStatus(false);
+    setNotifMessage(`A new blog - ${blogTitle} by ${blogAuthor}`);
+		setBlogs(blogs.concat(blog));
+		setBlogTitle('');
+		setBlogAuthor('');
+		setBlogUrl('');
+
+    setTimeout(() => {
+      setNotifMessage(null);
+    }, 5000)
+	};
+	const addBlogForm = () => (
+		<form onSubmit={handleAddBlog}>
+			<div>
+				title:
+				<input
+					type="text"
+					value={blogTitle}
+					onChange={({ target }) => setBlogTitle(target.value)}
+				/>
+			</div>
+			<div>
+				author:
+				<input
+					type="text"
+					value={blogAuthor}
+					onChange={({ target }) => setBlogAuthor(target.value)}
+				/>
+			</div>
+			<div>
+				url:
+				<input
+					type="text"
+					value={blogUrl}
+					onChange={({ target }) => setBlogUrl(target.value)}
+				/>
+			</div>
+			<button type="submit">Create</button>
+		</form>
+	);
+
 	const blogsInfo = () => (
 		<div>
 			<h2>blogs</h2>
@@ -110,7 +187,10 @@ const App = () => {
 	return (
 		<>
 			<h1>Blogs</h1>
-			<Notification message={errorMessage} />
+			<Notification
+				errorStatus={errorStatus}
+				message={errorMessage}
+			/>
 			{!user && loginForm()}
 			{user && (
 				<div>
@@ -118,6 +198,8 @@ const App = () => {
 						{user.name} logged in
 						<button onClick={handleLogOut}>logout</button>
 					</p>
+					<h1>create New</h1>
+					{addBlogForm()}
 					{blogsInfo()}
 				</div>
 			)}
