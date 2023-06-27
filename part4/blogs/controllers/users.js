@@ -12,8 +12,24 @@ usersRouter.get('/', async (req, res) => {
 	res.json(users);
 });
 
+// returns true if input chars is more or equal to 3
+const validInput = (input) => {
+	return input.length >= 3;
+}
+
 usersRouter.post('/', async (req, res) => {
 	const { username, name, password } = req.body;
+	
+	// Both username and password must be at least 3 chars long.
+	if(!validInput(username)) {
+		return res.status(400).json({
+			error: 'username must be more than 3 chars long'
+		})
+	} else if(!validInput(password)) {
+		return res.status(400).json({
+			error: 'password must be more than 3 chars long'
+		})
+	}
 
 	const saltRounds = 10;
 	const passwordHash = await bcrypt.hash(password, saltRounds);

@@ -1,7 +1,7 @@
 GET http://localhost:3003/api/blogs
 
 ###
-POST localhost:3003/api/blogs
+POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
@@ -37,7 +37,7 @@ Content-Type: application/json
 ###
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhdDMiLCJpZCI6IjY0OWE1MTdkOGVjNTI5NDcwNzc1MTQxYSIsImlhdCI6MTY4NzgzNTk5NywiZXhwIjoxNjg3ODM5NTk3fQ.FVJssFmSF2oO3cH3Uuat2k2bJq-YvjRA7WCD959EPDE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhdDMiLCJpZCI6IjY0OWE2NDg5NDU1NTRhZWRiYzRjMDA5MiIsImlhdCI6MTY4NzgzOTkyMywiZXhwIjoxNjg3ODQzNTIzfQ.ZtnjLKRajJHtft6yA6Id4XqoOHEyoi5mWgZeL18TtFg
 
 {
     "title": "CA2T",

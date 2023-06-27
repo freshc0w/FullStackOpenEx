@@ -68,25 +68,41 @@ describe('viewing a specific blog', () => {
 });
 
 describe('addition of a new blog', () => {
-	test('succeeds with valid data', async () => {
+	beforeEach(async () => {
+		await User.deleteMany({});
+
+		const passwordHash = await bcrypt.hash('sekret', 10);
+		const user = new User({ username: 'root', passwordHash });
+		await user.save();
+	});
+	test('fails with valid data but no authorization', async () => {
+		const users = await helper.usersInDb();
 		const newBlog = {
 			title: 'The Power of Positive Thinking',
 			author: 'Sophia Roberts',
 			url: 'https://www.example.com/the-power-of-positive-thinking',
 			likes: 742,
+			userId: users[0].id
 		};
+
+		// Passes without authorization
+		// await api
+		// 	.post(baseUrl)
+		// 	.send(newBlog)
+		// 	.expect(201)
+		// 	.expect('Content-Type', /application\/json/);
 
 		await api
 			.post(baseUrl)
 			.send(newBlog)
-			.expect(201)
+			.expect(400)
 			.expect('Content-Type', /application\/json/);
 
-		const blogsAtEnd = await helper.blogsInDb();
-		expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+		// const blogsAtEnd = await helper.blogsInDb();
+		// expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
-		const blogTitles = blogsAtEnd.map(b => b.title);
-		expect(blogTitles).toContain('The Power of Positive Thinking');
+		// const blogTitles = blogsAtEnd.map(b => b.title);
+		// expect(blogTitles).toContain('The Power of Positive Thinking');
 	});
 });
 
@@ -164,6 +180,34 @@ describe('when there is initially one user in db', () => {
         const usernames = usersAtEnd.map(u => u.username);
         expect(usernames).toContain(newUser.username);
     });
+	test('creation fails with a username less than 3 chars', async () => {
+		const newUser = {
+			username: 'ro',
+			name: 'superstar',
+			password: 'sekret',
+		}
+		const result = await api
+			.post('/api/users')
+			.send(newUser)
+			.expect(400)
+			.expect('Content-Type', /application\/json/)
+		
+		expect(result.body.error).toContain('username must be more than 3 chars long');
+	})
+	test('creation fails with a password less than 3 chars', async () => {
+		const newUser = {
+			username: 'rott',
+			name: 'superstar',
+			password: 's',
+		}
+		const result = await api
+			.post('/api/users')
+			.send(newUser)
+			.expect(400)
+			.expect('Content-Type', /application\/json/)
+		
+		expect(result.body.error).toContain('password must be more than 3 chars long');
+	})
 });
 
 afterAll(async () => {
