@@ -31,6 +31,23 @@ const App = props => {
 	const [password, setPassword] = useState('');
 	const [user, setUser] = useState(null);
 
+	
+	// Get data and set data to state
+	useEffect(() => {
+		noteService.getAll().then(initialNotes => {
+			setNotes(initialNotes);
+		});
+	}, []);
+
+	useEffect(() => {
+		const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser');
+		if(loggedUserJSON) {
+			const user = JSON.parse(loggedUserJSON)
+			setUser(user)
+			noteService.setToken(user.token);
+		}
+	}, []);
+
 	const handleLogin = async e => {
 		e.preventDefault();
 		try {
@@ -38,6 +55,10 @@ const App = props => {
 				username,
 				password,
 			});
+
+			window.localStorage.setItem(
+				'loggedNoteappUser', JSON.stringify(user)
+			)
 			noteService.setToken(user.token);
 			setUser(user);
 			setUsername('');
@@ -83,13 +104,6 @@ const App = props => {
 			<button type="submit">save</button>
 		</form>
 	);
-
-	// Get data and set data to state
-	useEffect(() => {
-		noteService.getAll().then(initialNotes => {
-			setNotes(initialNotes);
-		});
-	}, []);
 
 	if (!notes) return null;
 

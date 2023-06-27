@@ -1,6 +1,53 @@
 GET http://localhost:3003/api/blogs
 
 ###
+GET http://localhost:3003/api/users
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "bat",
+    "name": "batter",
+    "password": "11111"
+}
+
+###
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+    "username": "bat",
+    "password": "11111"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhdCIsImlkIjoiNjQ5YThlMzg1OWJiYjQzODI3YTBmYTcxIiwiaWF0IjoxNjg3ODUwNTU2LCJleHAiOjE2ODc4NTQxNTZ9.zQiK8ZA_s3K0trVcO6cciRWWABkn_R38F6rf3hy0k68
+
+{
+    "title": "note3",
+    "author": "Freshc0w",
+    "url": "www.great.com",
+    "likes": 1
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
