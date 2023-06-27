@@ -83,7 +83,7 @@ const App = () => {
 			setUsername('');
 			setPassword('');
 		} catch (err) {
-      setErrorStatus(true);
+			setErrorStatus(true);
 			setNotifMessage('wrong username or password');
 
 			setTimeout(() => {
@@ -126,16 +126,16 @@ const App = () => {
 		};
 
 		const blog = await blogService.create(newBlogObj);
-    setErrorStatus(false);
-    setNotifMessage(`A new blog - ${blogTitle} by ${blogAuthor}`);
+		setErrorStatus(false);
+		setNotifMessage(`A new blog - ${blogTitle} by ${blogAuthor}`);
 		setBlogs(blogs.concat(blog));
 		setBlogTitle('');
 		setBlogAuthor('');
 		setBlogUrl('');
 
-    setTimeout(() => {
-      setNotifMessage(null);
-    }, 5000)
+		setTimeout(() => {
+			setNotifMessage(null);
+		}, 5000);
 	};
 	const addBlogForm = () => (
 		<form onSubmit={handleAddBlog}>
