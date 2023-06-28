@@ -1,43 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
-
-const Notification = ({ errorStatus, message }) => {
-	const errorStyle = {
-		color: 'red',
-		background: 'lightgrey',
-		fontSize: '20px',
-		borderStyle: 'solid',
-		borderRadius: '5px',
-		padding: '10px',
-		marginBottom: '10px',
-	};
-
-	const successStyle = {
-		color: 'green',
-		background: 'lightgrey',
-		fontSize: '20px',
-		borderStyle: 'solid',
-		borderRadius: '5px',
-		padding: '10px',
-		marginBottom: '10px',
-	};
-
-	if (message === null) return null;
-
-	return <div style={errorStatus ? errorStyle : successStyle}>{message}</div>;
-};
-
-const Note = ({ note, toggleImportance }) => {
-	const label = note.important ? 'make not important' : 'make important';
-	return (
-		<li className="note">
-			{note.content}
-			<button onClick={toggleImportance}>{label}</button>
-		</li>
-	);
-};
+import Notification from './components/Notification'
+import Togglable from './components/Togglable';
+import BlogForm from './components/BlogForm';
 
 const App = () => {
 	const [blogs, setBlogs] = useState([]);
@@ -47,9 +14,7 @@ const App = () => {
 	const [password, setPassword] = useState('');
 	const [user, setUser] = useState(null);
 
-	const [blogTitle, setBlogTitle] = useState('');
-	const [blogAuthor, setBlogAuthor] = useState('');
-	const [blogUrl, setBlogUrl] = useState('');
+	const blogFormRef = useRef();
 
 	useEffect(() => {
 		blogService.getAll().then(blogs => setBlogs(blogs));
@@ -116,56 +81,24 @@ const App = () => {
 		</form>
 	);
 
-	const handleAddBlog = async e => {
-		e.preventDefault();
-
-		const newBlogObj = {
-			title: blogTitle,
-			author: blogAuthor,
-			url: blogUrl,
-		};
-
+	const handleAddBlog = async (newBlogObj) => {
+		blogFormRef.current.toggleVisibility();
 		const blog = await blogService.create(newBlogObj);
-		setErrorStatus(false);
-		setNotifMessage(`A new blog - ${blogTitle} by ${blogAuthor}`);
 		setBlogs(blogs.concat(blog));
-		setBlogTitle('');
-		setBlogAuthor('');
-		setBlogUrl('');
+
+		setErrorStatus(false);
+		setNotifMessage(`A new blog - ${newBlogObj.title} by ${newBlogObj.author}`);
 
 		setTimeout(() => {
 			setNotifMessage(null);
 		}, 5000);
 	};
+
 	const addBlogForm = () => (
-		<form onSubmit={handleAddBlog}>
-			<div>
-				title:
-				<input
-					type="text"
-					value={blogTitle}
-					onChange={({ target }) => setBlogTitle(target.value)}
-				/>
-			</div>
-			<div>
-				author:
-				<input
-					type="text"
-					value={blogAuthor}
-					onChange={({ target }) => setBlogAuthor(target.value)}
-				/>
-			</div>
-			<div>
-				url:
-				<input
-					type="text"
-					value={blogUrl}
-					onChange={({ target }) => setBlogUrl(target.value)}
-				/>
-			</div>
-			<button type="submit">Create</button>
-		</form>
-	);
+		<Togglable buttonLabel='new blog' ref={blogFormRef}>
+			<BlogForm createBlog={handleAddBlog} setNotifMessage={setNotifMessage}/>
+		</Togglable>
+	)
 
 	const blogsInfo = () => (
 		<div>

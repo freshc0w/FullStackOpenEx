@@ -1,5 +1,5 @@
 import Note from './components/Note';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import noteService from './services/notes';
 import loginService from './services/login';
@@ -32,6 +32,8 @@ const App = props => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const [user, setUser] = useState(null);
+
+	const noteFormRef = useRef();
 
 	// Get data and set data to state
 	useEffect(() => {
@@ -72,38 +74,6 @@ const App = props => {
 			}, 5000);
 		}
 	};
-
-	// const loginForm = () => {
-	// 	const hideWhenVisible = { display: loginVisible ? 'none' : '' };
-	// 	const showWhenVisible = { display: loginVisible ? '' : 'none' };
-
-	// 	return (
-	// 		<div>
-	// 			<div style={hideWhenVisible}>
-	// 				<button onClick={() => setLoginVisible(true)}>
-	// 					Log in
-	// 				</button>
-	// 			</div>
-
-	// 			<div style={showWhenVisible}>
-	// 				<LoginForm
-	// 					username={username}
-	// 					password={password}
-	// 					handleUsernameChange={({ target }) =>
-	// 						setUsername(target.value)
-	// 					}
-	// 					handlePasswordChange={({ target }) =>
-	// 						setPassword(target.value)
-	// 					}
-	// 					handleSubmit={handleLogin}
-	// 				/>
-	// 				<button onClick={() => setLoginVisible(false)}>
-	// 					cancel
-	// 				</button>
-	// 			</div>
-	// 		</div>
-	// 	);
-	// };
 
 	const loginForm = () => {
 		return (
@@ -148,6 +118,7 @@ const App = props => {
 	};
 
 	const addNote = (noteObject) => {
+		noteFormRef.current.toggleVisibility();
 		noteService
 			.create(noteObject)
 			.then(returnedNote => {
@@ -156,9 +127,12 @@ const App = props => {
 	}
 
 	const noteForm = () => (
-		<NoteForm
-			createNote={addNote}
-		/>
+		// noteForm reference to Togglable to access the 'visible' state
+		<Togglable buttonLabel='new note' ref={noteFormRef}>
+			<NoteForm
+				createNote={addNote}
+			/>
+		</Togglable>
 	);
 
 	const notesToShow = showAll ? notes : notes.filter(note => note.important);
