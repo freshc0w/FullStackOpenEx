@@ -61,9 +61,14 @@ blogsRouter.post('/', async (req, res) => {
 
 blogsRouter.delete('/:id', async (req, res) => {
 	const blog = await Blog.findById(req.params.id);
+	console.log(req.params.id);
+	console.log('blog user id', blog.user.toString());
 	
 	// get user from request object
 	const user = req.user;
+	// console.log('request: ', req)
+	// console.log('user: ', user.toString())
+	// console.log('user id', user.id.toString());
 
 	if (blog.user.toString() === user.id.toString()) {
 		await Blog.findByIdAndRemove(req.params.id);

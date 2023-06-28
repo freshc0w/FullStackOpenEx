@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const Blog = ({ blog, handleUpdateBlog }) => {
+const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
 	const [visible, setVisible] = useState(false);
 	const [currBlog, setCurrBlog] = useState(blog);
 
@@ -14,10 +14,16 @@ const Blog = ({ blog, handleUpdateBlog }) => {
 	const updateBlog = () => {
 		const newBlogObj = {
 			...blog,
-			likes: (currBlog.likes || 0) + 1
+			likes: (currBlog.likes || 0) + 1,
 		};
 		setCurrBlog(newBlogObj);
 		handleUpdateBlog(newBlogObj);
+	};
+
+	const removeBlog = () => {
+		if (window.confirm(`Remove blog ${blog.name} by ${blog.author}?`)) {
+			handleRemoveBlog(blog.id.toString());
+		}
 	};
 
 	return (
@@ -33,6 +39,8 @@ const Blog = ({ blog, handleUpdateBlog }) => {
 				<button onClick={updateBlog}>like</button>
 				<br />
 				{currBlog.author}
+				<br />
+				<button onClick={removeBlog}>remove</button>
 			</div>
 		</div>
 	);

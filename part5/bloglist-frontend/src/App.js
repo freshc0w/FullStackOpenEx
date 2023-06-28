@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
-import Notification from './components/Notification'
+import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import BlogForm from './components/BlogForm';
 
@@ -81,13 +81,15 @@ const App = () => {
 		</form>
 	);
 
-	const handleAddBlog = async (newBlogObj) => {
+	const handleAddBlog = async newBlogObj => {
 		blogFormRef.current.toggleVisibility();
 		const blog = await blogService.create(newBlogObj);
 		setBlogs(blogs.concat(blog));
 
 		setErrorStatus(false);
-		setNotifMessage(`A new blog - ${newBlogObj.title} by ${newBlogObj.author}`);
+		setNotifMessage(
+			`A new blog - ${newBlogObj.title} by ${newBlogObj.author}`
+		);
 
 		setTimeout(() => {
 			setNotifMessage(null);
@@ -95,26 +97,49 @@ const App = () => {
 	};
 
 	const addBlogForm = () => (
-		<Togglable buttonLabel='new blog' ref={blogFormRef}>
-			<BlogForm createBlog={handleAddBlog} setNotifMessage={setNotifMessage}/>
+		<Togglable
+			buttonLabel="new blog"
+			ref={blogFormRef}
+		>
+			<BlogForm
+				createBlog={handleAddBlog}
+				setNotifMessage={setNotifMessage}
+			/>
 		</Togglable>
-	)
+	);
 
-	const updateBlog = async (blogObj) => {
+	const updateBlog = async blogObj => {
 		const blog = await blogService.update(blogObj.id, blogObj);
-		setBlogs(blogs.concat(blog));
-	}
+		setBlogs(blogs.map(b => (blog.id === b.id ? blog : b)));
+	};
+
+	const removeBlog = id => {
+		blogService.removeBlog(id).then(returnedBlog => {
+			setBlogs(blogs.filter(b => b.id !== id));
+		});
+	};
 
 	const blogsInfo = () => (
 		<div>
 			<h2>blogs</h2>
-			{blogs.map(blog => (
+			{/* {blogs.map(blog => (
 				<Blog
 					key={blog.id}
 					blog={blog}
 					handleUpdateBlog={updateBlog}
 				/>	
-			))}
+			))} */}
+			{/* sorting by the amount of likes in descending order */}
+			{blogs
+				.sort((a, b) => b.likes - a.likes)
+				.map(blog => (
+					<Blog
+						key={blog.id}
+						blog={blog}
+						handleUpdateBlog={updateBlog}
+						handleRemoveBlog={removeBlog}
+					/>
+				))}
 		</div>
 	);
 
