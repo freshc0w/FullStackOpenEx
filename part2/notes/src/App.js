@@ -26,10 +26,7 @@ const Footer = () => {
 };
 
 const App = props => {
-	const [loginVisible, setLoginVisible] = useState(false);
-
 	const [notes, setNotes] = useState(null);
-	const [newNote, setNewNote] = useState('a new note...');
 	const [showAll, setShowAll] = useState(true);
 	const [errorMessage, setErrorMessage] = useState(null);
 	const [username, setUsername] = useState('');
@@ -126,14 +123,6 @@ const App = props => {
 		);
 	};
 
-	const noteForm = () => (
-		<NoteForm
-			onSubmit={addNote}
-			handleChange={handleNoteChange}
-			value={newNote}
-		/>
-	);
-
 	if (!notes) return null;
 
 	const toggleImportanceOf = id => {
@@ -158,24 +147,19 @@ const App = props => {
 			});
 	};
 
-	const addNote = e => {
-		e.preventDefault();
+	const addNote = (noteObject) => {
+		noteService
+			.create(noteObject)
+			.then(returnedNote => {
+				setNotes(notes.concat(returnedNote))
+			})
+	}
 
-		const newNoteObj = {
-			content: newNote,
-			important: Math.random() < 0.5,
-			id: notes.length + 1,
-		};
-
-		noteService.create(newNoteObj).then(returnedNote => {
-			setNotes(notes.concat(returnedNote));
-			setNewNote('');
-		});
-	};
-
-	const handleNoteChange = e => {
-		setNewNote(e.target.value);
-	};
+	const noteForm = () => (
+		<NoteForm
+			createNote={addNote}
+		/>
+	);
 
 	const notesToShow = showAll ? notes : notes.filter(note => note.important);
 
