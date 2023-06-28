@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleUpdateBlog }) => {
 	const [visible, setVisible] = useState(false);
+	const [currBlog, setCurrBlog] = useState(blog);
 
 	const blogStyle = {
 		paddingTop: 10,
@@ -10,23 +11,28 @@ const Blog = ({ blog }) => {
 		marginBottom: 5,
 	};
 
-	// set blog likes if none is found
-	blog.likes = blog.likes || 0;
+	const updateBlog = () => {
+		const newBlogObj = {
+			...blog,
+			likes: (currBlog.likes || 0) + 1
+		};
+		setCurrBlog(newBlogObj);
+		handleUpdateBlog(newBlogObj);
+	};
 
 	return (
 		<div style={blogStyle}>
-      
-			{blog.title}{' '}
+			{currBlog.title}{' '}
 			<button onClick={() => setVisible(!visible)}>
 				{visible ? 'hide' : 'view'}
 			</button>
-
 			<div style={{ display: visible ? '' : 'none' }}>
-				{blog.url}
+				{currBlog.url}
 				<br />
-				likes {blog.likes} <button>like</button>
+				likes {currBlog.likes || 0}{' '}
+				<button onClick={updateBlog}>like</button>
 				<br />
-				{blog.author}
+				{currBlog.author}
 			</div>
 		</div>
 	);

@@ -100,6 +100,11 @@ const App = () => {
 		</Togglable>
 	)
 
+	const updateBlog = async (blogObj) => {
+		const blog = await blogService.update(blogObj.id, blogObj);
+		setBlogs(blogs.concat(blog));
+	}
+
 	const blogsInfo = () => (
 		<div>
 			<h2>blogs</h2>
@@ -107,7 +112,8 @@ const App = () => {
 				<Blog
 					key={blog.id}
 					blog={blog}
-				/>
+					handleUpdateBlog={updateBlog}
+				/>	
 			))}
 		</div>
 	);
