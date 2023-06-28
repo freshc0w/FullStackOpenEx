@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const BlogForm = ({ createBlog, setNotifMessage }) => {
+const BlogForm = ({ createBlog }) => {
     const [blogTitle, setBlogTitle] = useState('');
 	const [blogAuthor, setBlogAuthor] = useState('');
 	const [blogUrl, setBlogUrl] = useState('');
