@@ -6,6 +6,7 @@ import Blog from './Blog';
 
 describe('<Togglable />', () => {
 	let container;
+    const mockHandler = jest.fn();
 	beforeEach(() => {
 		const blog = {
 			title: 'Blog renders title and author',
@@ -13,7 +14,7 @@ describe('<Togglable />', () => {
 			url: 'http://example.com',
 			likes: 2,
 		};
-		container = render(<Blog blog={blog} />).container;
+		container = render(<Blog blog={blog} handleUpdateBlog={mockHandler} />).container;
 	});
 
 	test('renders blog title and author, but does not render url or number of like by default', () => {
@@ -42,4 +43,14 @@ describe('<Togglable />', () => {
 		const div = container.querySelector('.togglableContent');
 		expect(div).not.toHaveStyle('display: none');
 	});
+
+    test('If like button is clicked twice, the event handler of the component is called twice', async () => {
+        const btn = container.querySelector('.likeBtn')
+        expect(btn).toBeDefined()
+        const user = userEvent.setup();
+        await user.click(btn);
+        await user.click(btn);
+
+        expect(mockHandler.mock.calls).toHaveLength(2);
+    })
 });
