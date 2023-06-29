@@ -127,7 +127,7 @@ const App = () => {
 					key={blog.id}
 					blog={blog}
 					handleUpdateBlog={updateBlog}
-				/>	
+				/>
 			))} */}
 			{/* sorting by the amount of likes in descending order */}
 			{blogs
