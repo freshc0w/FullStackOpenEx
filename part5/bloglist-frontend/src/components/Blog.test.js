@@ -4,23 +4,42 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Blog from './Blog';
 
-test('renders blog title and author, but does not render url or number of like by default', () => {
-	const blog = {
-		title: 'Blog renders title and author',
-		author: 'Freshc0w',
-		url: 'http://example.com',
-		likes: 2,
-	};
-
-	render(<Blog blog={blog} />);
-	const titleElement = screen.getByText('Blog renders title and author', {
-		exact: false,
+describe('<Togglable />', () => {
+	let container;
+	beforeEach(() => {
+		const blog = {
+			title: 'Blog renders title and author',
+			author: 'Freshc0w',
+			url: 'http://example.com',
+			likes: 2,
+		};
+		container = render(<Blog blog={blog} />).container;
 	});
-	const authorElement = screen.getByText('Freshc0w', { exact: false });
-	const urlElement = screen.queryByText('http://example.com');
-	const likesElement = screen.queryByText('2');
-	expect(titleElement).toBeDefined();
-	expect(authorElement).toBeDefined();
-	expect(urlElement).toBeNull();
-	expect(likesElement).toBeNull();
+
+	test('renders blog title and author, but does not render url or number of like by default', () => {
+		const titleElement = screen.getByText('Blog renders title and author', {
+			exact: false,
+		});
+		const authorElement = screen.getByText('Freshc0w', { exact: false });
+		const urlElement = screen.queryByText('http://example.com');
+		const likesElement = screen.queryByText('2');
+		expect(titleElement).toBeDefined();
+		expect(authorElement).toBeDefined();
+		expect(urlElement).toBeNull();
+		expect(likesElement).toBeNull();
+	});
+
+	test('at start, children are not displayed', async () => {
+		const div = container.querySelector('.togglableContent');
+		expect(div).toHaveStyle('display: none');
+	});
+
+	test('after clicking button, children are displayed', async () => {
+		const user = userEvent.setup();
+		const button = screen.getByText('view');
+		await user.click(button);
+
+		const div = container.querySelector('.togglableContent');
+		expect(div).not.toHaveStyle('display: none');
+	});
 });

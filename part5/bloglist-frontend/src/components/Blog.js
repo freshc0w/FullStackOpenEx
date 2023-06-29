@@ -29,10 +29,10 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
 	return (
 		<div style={blogStyle}>
 			{currBlog.title} {currBlog.author}
-			<button onClick={() => setVisible(!visible)}>
+			<button className='clkBtn' onClick={() => setVisible(!visible)}>
 				{visible ? 'hide' : 'view'}
 			</button>
-			<div style={{ display: visible ? '' : 'none' }}>
+			<div className='togglableContent' style={{ display: visible ? '' : 'none' }}>
 				{currBlog.url}
 				<br />
 				likes {currBlog.likes || 0}{' '}
