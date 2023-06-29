@@ -21,14 +21,14 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
 	};
 
 	const removeBlog = () => {
-		if (window.confirm(`Remove blog ${blog.name} by ${blog.author}?`)) {
+		if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
 			handleRemoveBlog(blog.id.toString());
 		}
 	};
 
 	return (
 		<div style={blogStyle}>
-			{currBlog.title}{' '}
+			{currBlog.title} {currBlog.author}
 			<button onClick={() => setVisible(!visible)}>
 				{visible ? 'hide' : 'view'}
 			</button>
@@ -37,8 +37,6 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
 				<br />
 				likes {currBlog.likes || 0}{' '}
 				<button onClick={updateBlog}>like</button>
-				<br />
-				{currBlog.author}
 				<br />
 				<button onClick={removeBlog}>remove</button>
 			</div>
