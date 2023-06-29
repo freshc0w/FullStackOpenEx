@@ -1,6 +1,5 @@
 import Note from './components/Note';
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import noteService from './services/notes';
 import loginService from './services/login';
 import Notification from './components/Notification';
@@ -117,21 +116,20 @@ const App = props => {
 			});
 	};
 
-	const addNote = (noteObject) => {
+	const addNote = noteObject => {
 		noteFormRef.current.toggleVisibility();
-		noteService
-			.create(noteObject)
-			.then(returnedNote => {
-				setNotes(notes.concat(returnedNote))
-			})
-	}
+		noteService.create(noteObject).then(returnedNote => {
+			setNotes(notes.concat(returnedNote));
+		});
+	};
 
 	const noteForm = () => (
 		// noteForm reference to Togglable to access the 'visible' state
-		<Togglable buttonLabel='new note' ref={noteFormRef}>
-			<NoteForm
-				createNote={addNote}
-			/>
+		<Togglable
+			buttonLabel="new note"
+			ref={noteFormRef}
+		>
+			<NoteForm createNote={addNote} />
 		</Togglable>
 	);
 
