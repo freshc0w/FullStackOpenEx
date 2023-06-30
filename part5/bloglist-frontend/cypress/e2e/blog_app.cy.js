@@ -50,16 +50,26 @@ describe('Blog app', function () {
 	describe('when logged in', function () {
 		beforeEach(function () {
 			cy.login({ username: 'mluukkai', password: 'salainen' });
+      cy.createBlog({title: 'new blog1', author: 'Freshc0w', url: 'http://bat.com'});
 		});
 
 		it('a blog can be created', function () {
 			cy.get('.toggle-visible').click();
-			cy.get('#title-input').type('new blog');
+			cy.get('#title-input').type('new blog2');
 			cy.get('#author-input').type('Freshc0w');
 			cy.get('#url-input').type('http://bat.com');
 
 			cy.get('#submit-blog').click();
-			cy.contains('new blog');
+			cy.contains('new blog2');
 		});
+
+    it.only('user can like a blog', function() {
+      cy.get('button.clkBtn').then(btns => {
+        console.log('nmber of btns', btns.length)
+        cy.wrap(btns[0]).click()
+      })
+      cy.get('button.likeBtn').click()
+      cy.contains('likes 1')
+    })
 	});
 });
