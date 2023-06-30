@@ -42,6 +42,7 @@ const reducer = (state = initialState, action) => {
 	}
 };
 
+// action createors
 export const voteOnce = id => {
 	return {
 		type: 'VOTE',
