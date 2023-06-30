@@ -1,14 +1,22 @@
 import { useDispatch } from 'react-redux';
 import { createAnec } from '../reducers/anecdoteReducer';
+import { displayNotification } from '../reducers/notificationReducer';
 
 const AnecdoteForm = () => {
 	const dispatch = useDispatch();
 
 	const addAnec = e => {
+		// Process of changing adding anecdote based on the input value
 		e.preventDefault();
 		const content = e.target.anec.value;
 		e.target.anec.value = '';
 		dispatch(createAnec(content));
+
+		// Also display notification
+		dispatch(displayNotification(`added '${content}'`));
+		setTimeout(() => {
+			dispatch(displayNotification(''));
+		}, 5000);
 	};
 
 	return (
