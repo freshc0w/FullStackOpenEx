@@ -46,4 +46,20 @@ describe('Blog app', function () {
 				.and('have.css', 'border-style', 'solid');
 		});
 	});
+
+	describe('when logged in', function () {
+		beforeEach(function () {
+			cy.login({ username: 'mluukkai', password: 'salainen' });
+		});
+
+		it('a blog can be created', function () {
+			cy.get('.toggle-visible').click();
+			cy.get('#title-input').type('new blog');
+			cy.get('#author-input').type('Freshc0w');
+			cy.get('#url-input').type('http://bat.com');
+
+			cy.get('#submit-blog').click();
+			cy.contains('new blog');
+		});
+	});
 });
