@@ -21,7 +21,7 @@ const Notification = ({ errorStatus, message }) => {
 
 	if (message === null) return null;
 
-	return <div style={errorStatus ? errorStyle : successStyle}>{message}</div>;
+	return <div className="error" style={errorStatus ? errorStyle : successStyle}>{message}</div>;
 };
 
 export default Notification;
