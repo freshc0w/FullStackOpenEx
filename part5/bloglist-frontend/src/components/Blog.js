@@ -27,7 +27,7 @@ const Blog = ({ blog, handleUpdateBlog, handleRemoveBlog }) => {
 	};
 
 	return (
-		<div style={blogStyle}>
+		<div className='blog' style={blogStyle}>
 			{currBlog.title} {currBlog.author}
 			<button className='clkBtn' onClick={() => setVisible(!visible)}>
 				{visible ? 'hide' : 'view'}

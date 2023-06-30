@@ -56,6 +56,7 @@ describe('Blog app', function () {
 				title: 'new blog1',
 				author: 'Freshc0w',
 				url: 'http://bat.com',
+				likes: 1,
 			});
 		});
 
@@ -75,7 +76,7 @@ describe('Blog app', function () {
 				cy.wrap(btns[0]).click();
 			});
 			cy.get('button.likeBtn').click();
-			cy.contains('likes 1');
+			cy.contains('likes 2');
 		});
 
 		it('user can delete their created blog', function () {
@@ -93,6 +94,22 @@ describe('Blog app', function () {
 				cy.wrap(btns[1]).click();
 			});
 			cy.contains('new blog2').should('not.exist');
+		});
+
+		it('blog list should be viewed from most likes to least likes', function () {
+			for (let i = 2; i < 7; i++) {
+				cy.createBlog({
+					title: `new blog${i}`,
+					author: 'Freshc0w',
+					url: 'http://bat.com',
+					likes: i,
+				});
+			}
+
+			// should have 6 blogs and blog # 6 has most likes
+			// so it should be first
+			cy.get('.blog').eq(0).should('contain', 'new blog6');
+			cy.get('.blog').eq(5).should('contain', 'new blog1');
 		});
 	});
 });
