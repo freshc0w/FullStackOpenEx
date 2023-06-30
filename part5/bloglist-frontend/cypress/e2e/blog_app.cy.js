@@ -34,6 +34,8 @@ describe('Blog app', function () {
 		});
 
 		it('fails with wrong credentials', function () {
+			// // Need to log out first
+			// cy.contains('logout').click()
 			cy.contains('login').click();
 			cy.get('#username').type('mluukkai');
 			cy.get('#password').type('wrong');
@@ -50,7 +52,11 @@ describe('Blog app', function () {
 	describe('when logged in', function () {
 		beforeEach(function () {
 			cy.login({ username: 'mluukkai', password: 'salainen' });
-      cy.createBlog({title: 'new blog1', author: 'Freshc0w', url: 'http://bat.com'});
+			cy.createBlog({
+				title: 'new blog1',
+				author: 'Freshc0w',
+				url: 'http://bat.com',
+			});
 		});
 
 		it('a blog can be created', function () {
@@ -63,13 +69,30 @@ describe('Blog app', function () {
 			cy.contains('new blog2');
 		});
 
-    it.only('user can like a blog', function() {
-      cy.get('button.clkBtn').then(btns => {
-        console.log('nmber of btns', btns.length)
-        cy.wrap(btns[0]).click()
-      })
-      cy.get('button.likeBtn').click()
-      cy.contains('likes 1')
-    })
+		it('user can like a blog', function () {
+			cy.get('button.clkBtn').then(btns => {
+				console.log('nmber of btns', btns.length);
+				cy.wrap(btns[0]).click();
+			});
+			cy.get('button.likeBtn').click();
+			cy.contains('likes 1');
+		});
+
+		it('user can delete their created blog', function () {
+			cy.createBlog({
+				title: 'new blog2',
+				author: 'Freshc0w',
+				url: 'http://bat.com',
+			});
+			cy.get('button.clkBtn').then(btns => {
+				cy.wrap(btns[1]).click();
+			});
+			// check if exist first
+			cy.contains('new blog2');
+			cy.get('button.removeBtn').then(btns => {
+				cy.wrap(btns[1]).click();
+			});
+			cy.contains('new blog2').should('not.exist');
+		});
 	});
 });
