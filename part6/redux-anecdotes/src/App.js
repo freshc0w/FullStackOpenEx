@@ -8,13 +8,14 @@ import Filter from './components/Filter';
 import Notification from './components/Notification';
 import anecService from './services/anecdotes';
 import { setAnecs } from './reducers/anecdoteReducer';
+import { initialiseAnecs } from './reducers/anecdoteReducer';
 
 const App = () => {
 	const dispatch = useDispatch();
 	useEffect(() => {
-		anecService.getAll().then(anecs => dispatch(setAnecs(anecs)));
+		dispatch(initialiseAnecs());
 	}, [dispatch]);
-	
+
 	return (
 		<div>
 			<h2>Anecdotes</h2>

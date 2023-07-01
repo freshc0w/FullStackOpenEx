@@ -1,4 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
+import anecServices from '../services/anecdotes';
+
 const anecdotesAtStart = [
 	'If it hurts, do it more often',
 	'Adding manpower to a late software project makes it later!',
@@ -34,21 +36,36 @@ const anecdoteSlice = createSlice({
 			};
 			return state.map(anec => (anec.id !== id ? anec : changedAnec));
 		},
-		createAnec(state, action) {
-			// const content = action.payload;
-			// state.push(asObject(content));
-			state.push(action.payload);
-		},
+		// createAnec(state, action) {
+		// 	// const content = action.payload;
+		// 	// state.push(asObject(content));
+		// 	state.push(action.payload);
+		// },
 		appendAnec(state, action) {
-			state.push(action.payload)
+			state.push(action.payload);
 		},
 		setAnecs(state, action) {
 			return action.payload;
-		}
+		},
 	},
 });
 
-export const { voteOnce, createAnec, appendAnec, setAnecs } = anecdoteSlice.actions;
+export const { voteOnce, appendAnec, setAnecs } = anecdoteSlice.actions;
+
+export const initialiseAnecs = () => {
+	return async dispatch => {
+		const anecs = await anecServices.getAll();
+		dispatch(setAnecs(anecs));
+	};
+};
+
+export const createAnec = content => {
+	return async dispatch => {
+		const newAnec = await anecServices.createNew(content);
+		dispatch(appendAnec(newAnec));
+	};
+};
+
 export default anecdoteSlice.reducer;
 
 /*
