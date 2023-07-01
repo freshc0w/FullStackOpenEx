@@ -22,7 +22,8 @@ const initialState = anecdotesAtStart.map(asObject);
 
 const anecdoteSlice = createSlice({
 	name: 'anecdotes',
-	initialState,
+	// with db.json, initialise empty arr as state
+	initialState: [],
 	reducers: {
 		voteOnce(state, action) {
 			const id = action.payload;
@@ -34,13 +35,20 @@ const anecdoteSlice = createSlice({
 			return state.map(anec => (anec.id !== id ? anec : changedAnec));
 		},
 		createAnec(state, action) {
-			const content = action.payload;
-			state.push(asObject(content));
+			// const content = action.payload;
+			// state.push(asObject(content));
+			state.push(action.payload);
 		},
+		appendAnec(state, action) {
+			state.push(action.payload)
+		},
+		setAnecs(state, action) {
+			return action.payload;
+		}
 	},
 });
 
-export const { voteOnce, createAnec } = anecdoteSlice.actions;
+export const { voteOnce, createAnec, appendAnec, setAnecs } = anecdoteSlice.actions;
 export default anecdoteSlice.reducer;
 
 /*

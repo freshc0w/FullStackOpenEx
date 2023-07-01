@@ -1,16 +1,18 @@
 import { useDispatch } from 'react-redux';
 import { createAnec } from '../reducers/anecdoteReducer';
 import { displayNotification } from '../reducers/notificationReducer';
+import anecService from '../services/anecdotes';
 
 const AnecdoteForm = () => {
 	const dispatch = useDispatch();
 
-	const addAnec = e => {
+	const addAnec = async e => {
 		// Process of changing adding anecdote based on the input value
 		e.preventDefault();
 		const content = e.target.anec.value;
 		e.target.anec.value = '';
-		dispatch(createAnec(content));
+		const newAnec = await anecService.createNew(content);
+		dispatch(createAnec(newAnec));
 
 		// Also display notification
 		dispatch(displayNotification(`added '${content}'`));
