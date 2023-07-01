@@ -2,8 +2,12 @@ import AnecdoteForm from './components/AnecdoteForm';
 import Notification from './components/Notification';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { getAnecs, createAnecs, updateAnec } from './requests';
+import { useNotifDispatch } from './NotifContext';
+
 
 const App = () => {
+	const dispatch = useNotifDispatch();
+
 	const queryClient = useQueryClient();
 
 	const updateAnecMutation = useMutation(updateAnec, {
@@ -13,8 +17,12 @@ const App = () => {
 	});
 
 	const handleVote = anecdote => {
-		console.log('vote');
 		updateAnecMutation.mutate({ ...anecdote, votes: anecdote.votes + 1 });
+    
+		dispatch({ type: 'VOTE', payload: anecdote.content });
+		setTimeout(() => {
+			dispatch({ type: 'RESET' });
+		}, 5000);
 	};
 
 	// const anecdotes = [
@@ -34,7 +42,7 @@ const App = () => {
 	const anecdotes = result.data;
 
 	return (
-		<div>
+		<>
 			<h3>Anecdote app</h3>
 
 			<Notification />
@@ -51,7 +59,7 @@ const App = () => {
 					</div>
 				</div>
 			))}
-		</div>
+		</>
 	);
 };
 
