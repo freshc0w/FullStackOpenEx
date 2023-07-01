@@ -6,9 +6,11 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 
 import App from './App';
-import noteReducer from './reducers/noteReducer';
+import store from './store';
+import noteReducer, { setNotes } from './reducers/noteReducer';
 import filterReducer from './reducers/filterReducer';
 
+import noteService from './services/notes';
 
 // const reducer = combineReducers({
 // 	notes: noteReducer,
@@ -16,12 +18,18 @@ import filterReducer from './reducers/filterReducer';
 // });
 
 // const store = createStore(reducer);
-const store = configureStore({
-	reducer: {
-		notes: noteReducer,
-		filter: filterReducer,
-	},
-});
+
+// const store = configureStore({
+// 	reducer: {
+// 		notes: noteReducer,
+// 		filter: filterReducer,
+// 	},
+// });
+
+// // Need to use .then because index.js is not async fnc
+// noteService.getAll().then(notes => {
+// 	store.dispatch(setNotes(notes));
+// });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const renderApp = () => {
