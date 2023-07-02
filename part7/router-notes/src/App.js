@@ -165,7 +165,7 @@ const App = () => {
 			<Routes>
 				<Route
 					path="/notes/:id"
-					element={<Note notes={notes} />}
+					element={<Note notes={note} />}
 				/>
 				<Route
 					path="/notes"
