@@ -10,7 +10,7 @@ import {
 	useMatch,
 } from 'react-router-dom';
 
-const Menu = () => {
+const Menu = ({ notification }) => {
 	const padding = {
 		paddingRight: 5,
 	};
@@ -35,6 +35,7 @@ const Menu = () => {
 			>
 				about
 			</Link>
+			<div>{notification}</div>
 		</div>
 	);
 };
@@ -44,7 +45,11 @@ const AnecdoteList = ({ anecdotes }) => (
 		<h2>Anecdotes</h2>
 		<ul>
 			{anecdotes.map(anecdote => (
-				<li key={anecdote.id}>{anecdote.content}</li>
+				<li key={anecdote.id}>
+					<Link to={`/anecdotes/${anecdote.id}`}>
+						{anecdote.content}
+					</Link>
+				</li>
 			))}
 		</ul>
 	</div>
@@ -133,6 +138,16 @@ const CreateNew = props => {
 	);
 };
 
+const Anecdote = ({ anecdote }) => {
+	return (
+		<>
+			<h1>{anecdote.content}</h1>
+			<p>{anecdote.author}</p>
+			<p>{`For more info visit "${anecdote.info}"`}</p>
+		</>
+	);
+};
+
 const App = () => {
 	const [anecdotes, setAnecdotes] = useState([
 		{
@@ -153,12 +168,18 @@ const App = () => {
 
 	const [notification, setNotification] = useState('');
 
-  const match = useMatch('/anecdotes/:id')
-  const anecdote = match ? anecdotes.find(a => a.id === Number(match.params.id)) : null;
+	const match = useMatch('/anecdotes/:id');
+	const anecdote = match
+		? anecdotes.find(a => a.id === Number(match.params.id))
+		: null;
 
 	const addNew = anecdote => {
 		anecdote.id = Math.round(Math.random() * 10000);
 		setAnecdotes(anecdotes.concat(anecdote));
+		setNotification(`a new anecdote, "${anecdote.content}" created!`);
+		setTimeout(() => {
+			setNotification('');
+		}, 5000);
 	};
 
 	const anecdoteById = id => anecdotes.find(a => a.id === id);
@@ -177,12 +198,12 @@ const App = () => {
 	return (
 		<div>
 			<h1>Software anecdotes</h1>
-			<Menu />
+			<Menu notification={notification} />
 			<Routes>
-        <Route
-          path='/anecdotes/:id'
-          element={<AnecdoteList anecdotes={[anecdote]} />}
-        />
+				<Route
+					path="/anecdotes/:id"
+					element={<Anecdote anecdote={anecdote} />}
+				/>
 				<Route
 					path="/"
 					element={<AnecdoteList anecdotes={anecdotes} />}
