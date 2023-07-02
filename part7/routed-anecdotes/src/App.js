@@ -94,9 +94,9 @@ const CreateNew = props => {
 	// const [content, setContent] = useState('');
 	// const [author, setAuthor] = useState('');
 	// const [info, setInfo] = useState('');
-	const content = useField('content', 'text');
-	const author = useField('author', 'text');
-	const info = useField('info', 'text');
+	const { reset: resetContent, ...content } = useField('content', 'text');
+	const { reset: resetAuthor, ...author } = useField('author', 'text');
+	const { reset: resetInfo, ...info } = useField('info', 'text');
 
 	const handleSubmit = e => {
 		e.preventDefault();
@@ -107,6 +107,10 @@ const CreateNew = props => {
 			info: info.value,
 			votes: 0,
 		});
+	};
+
+	const reset = (...fields) => {
+		[...fields].forEach(resetFnc => resetFnc());
 	};
 
 	return (
@@ -125,8 +129,11 @@ const CreateNew = props => {
 					url for more info
 					<input {...info} />
 				</div>
-				<button>create</button>
+				<button type="submit">create</button>
 			</form>
+			<button onClick={() => reset(resetContent, resetAuthor, resetInfo)}>
+				reset
+			</button>
 		</div>
 	);
 };
