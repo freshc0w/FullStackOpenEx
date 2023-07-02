@@ -153,6 +153,9 @@ const App = () => {
 
 	const [notification, setNotification] = useState('');
 
+  const match = useMatch('/anecdotes/:id')
+  const anecdote = match ? anecdotes.find(a => a.id === Number(match.params.id)) : null;
+
 	const addNew = anecdote => {
 		anecdote.id = Math.round(Math.random() * 10000);
 		setAnecdotes(anecdotes.concat(anecdote));
@@ -176,6 +179,10 @@ const App = () => {
 			<h1>Software anecdotes</h1>
 			<Menu />
 			<Routes>
+        <Route
+          path='/anecdotes/:id'
+          element={<AnecdoteList anecdotes={[anecdote]} />}
+        />
 				<Route
 					path="/"
 					element={<AnecdoteList anecdotes={anecdotes} />}
