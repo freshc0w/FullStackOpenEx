@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { likeBlog, removeBlog, setBlogs } from '../reducers/blogReducer';
+import { likeBlog, removeBlog, initialiseBlogs } from '../reducers/blogReducer';
 import {
 	setNotification,
 	setNotifStatus,
@@ -13,16 +14,23 @@ const BlogList = () => {
 		return blogs;
 	});
 
+	useEffect(() => {
+		dispatch(initialiseBlogs());
+	}, [dispatch]);
+
 	const addLikeBlog = blog => {
 		dispatch(likeBlog(blog.id));
 
-        // Display success notification
+		// Display success notification
 		dispatch(setNotifStatus(true));
 		dispatch(setNotification(`You liked ${blog.title}`, 5000));
 	};
 
-	const removeBlog = blog => {
+	const removeOneBlog = blog => {
 		dispatch(removeBlog(blog.id));
+
+		dispatch(setNotifStatus(true));
+		dispatch(setNotification(`You removed ${blog.title}`, 5000));
 	};
 
 	return (
@@ -35,7 +43,7 @@ const BlogList = () => {
 						key={blog.id}
 						blog={blog}
 						handleUpdateBlog={() => addLikeBlog(blog)}
-						handleRemoveBlog={() => removeBlog(blog)}
+						handleRemoveBlog={() => removeOneBlog(blog)}
 					/>
 				))}
 		</div>

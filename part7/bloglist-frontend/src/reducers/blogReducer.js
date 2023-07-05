@@ -51,7 +51,7 @@ export const likeBlog = id => {
 export const removeBlog = id => {
 	return async dispatch => {
 		const blogs = await blogServices.getAll();
-		await blogServices.removeBlog(id);
+        await blogServices.removeBlog(id);
 		dispatch(setBlogs(blogs.filter(b => b.id !== id)));
 	};
 };

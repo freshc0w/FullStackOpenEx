@@ -32,7 +32,6 @@ const removeBlog = async id => {
 	const config = {
 		headers: { Authorization: token },
 	};
-	console.log(config.headers.Authorization);
 	const response = await axios.delete(`${baseUrl}/${id}`, config);
 	return response.data;
 };
