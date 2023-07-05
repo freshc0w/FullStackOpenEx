@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import Togglable from './Togglable';
 
 const BlogForm = ({ createBlog }) => {
     const [blogTitle, setBlogTitle] = useState('');
 	const [blogAuthor, setBlogAuthor] = useState('');
 	const [blogUrl, setBlogUrl] = useState('');
+
+	const blogFormRef = useRef();
 
     const addBlog = e => {
         e.preventDefault();
