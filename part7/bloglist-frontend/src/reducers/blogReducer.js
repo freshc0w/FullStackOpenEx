@@ -48,10 +48,19 @@ export const likeBlog = id => {
 	};
 };
 
+export const addComment = (id, content) => {
+	return async dispatch => {
+		const blogs = await blogServices.getAll();
+		const blog = await blogServices.appendComment(id, content);
+		console.log(blog);
+		dispatch(updateBlog(blog));
+	};
+};
+
 export const removeBlog = id => {
 	return async dispatch => {
 		const blogs = await blogServices.getAll();
-        await blogServices.removeBlog(id);
+		await blogServices.removeBlog(id);
 		dispatch(setBlogs(blogs.filter(b => b.id !== id)));
 	};
 };
