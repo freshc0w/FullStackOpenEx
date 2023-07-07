@@ -31,6 +31,13 @@ const BlogPage = () => {
 				<button onClick={() => addLikeBlog(blog)}>like</button>
 			</p>
 			<p>added by {blog.author}</p>
+
+			<h3>Comments</h3>
+			{blog.comments.length ? (
+				blog.comments.map(c => <li key={c.id}>{c.content}</li>)
+			) : (
+				<p>No comments yet</p>
+			)}
 		</>
 	);
 };
