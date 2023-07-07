@@ -7,7 +7,7 @@ const useField = type => {
 	const onChange = event => {
 		setValue(event.target.value);
 	};
-
+	
 	return {
 		type,
 		value,
@@ -27,12 +27,21 @@ const useCountry = name => {
 			.catch(err => setCountry(null));
 	}, [name]);
 
+	useEffect(() => {
+		axios
+			.get(
+				`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`
+			)
+			.then(response => setCountry({ ...response }))
+			.catch(err => setCountry(null));
+	}, [name]);
+
 	return country;
 };
 
 const Country = ({ country }) => {
 	if (!country) {
-		return <div>not found...</div>;
+		return <div>not f ound...</div>;
 	}
 
 	return (
