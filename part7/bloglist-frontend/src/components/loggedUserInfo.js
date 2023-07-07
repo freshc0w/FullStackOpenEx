@@ -1,22 +1,21 @@
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../reducers/userReducer';
 
 const LoggedUserInfo = () => {
-    const dispatch = useDispatch();
-    const userName = useSelector(({ user }) => user.name)
+	const dispatch = useDispatch();
+	const user = useSelector(({ user }) => user);
 
-    const handleLogOut = () => {
+	const handleLogOut = () => {
 		window.localStorage.removeItem('loggedBlogappUser');
 		dispatch(setUser(null));
 	};
 
-    return (
-        <p>
-            {userName} logged in
-            <button onClick={handleLogOut}>logout</button>
-        </p>
-    )
-}
+	return (
+		<p>
+			{user && user.name} logged in
+			<button onClick={handleLogOut}>logout</button>
+		</p>
+	);
+};
 
-
-export default LoggedUserInfo
+export default LoggedUserInfo;
