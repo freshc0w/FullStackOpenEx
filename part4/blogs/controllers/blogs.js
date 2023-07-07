@@ -37,7 +37,7 @@ blogsRouter.post('/', async (req, res) => {
 
 	// Find the user by it's id and track the creator of the blog thru the creation of the blog json's info
 	// get user from request object
-	const user = req.user
+	const user = req.user;
 
 	const blog = new Blog({
 		title: body.title,
@@ -45,6 +45,7 @@ blogsRouter.post('/', async (req, res) => {
 		url: body.url,
 		likes: body.likes,
 		user: user.id,
+		comments: body.comments,
 	});
 
 	const savedBlog = await blog.save();
@@ -61,9 +62,7 @@ blogsRouter.post('/', async (req, res) => {
 
 blogsRouter.delete('/:id', async (req, res) => {
 	const blog = await Blog.findById(req.params.id);
-	console.log(req.params.id);
-	console.log('blog user id', blog.user.toString());
-	
+
 	// get user from request object
 	const user = req.user;
 	// console.log('request: ', req)
@@ -74,11 +73,9 @@ blogsRouter.delete('/:id', async (req, res) => {
 		await Blog.findByIdAndRemove(req.params.id);
 		res.status(204).end();
 	} else {
-		return res
-			.status(400)
-			.json({
-				error: 'Cannot delete blog that was not created by logged in user.',
-			});
+		return res.status(400).json({
+			error: 'Cannot delete blog that was not created by logged in user.',
+		});
 	}
 });
 
@@ -95,5 +92,39 @@ blogsRouter.put('/:id', async (req, res) => {
 	await Blog.findByIdAndUpdate(req.params.id, blog, { new: true });
 	res.json(blog);
 });
+
+// Adding comments
+blogsRouter.get('/:id/comments', async (req, res) => {
+	const blog = await Blog.findById(req.params.id);
+
+	blog ? res.json(blog.comments) : res.status(404).end();
+});
+
+const generateId = () => Math.floor(Math.random() * 1000000);
+
+blogsRouter.post('/:id/comments', async (req, res) => {
+	const body = req.body;
+	const content = body.content;
+	const foundBlog = await Blog.findById(req.params.id);
+	const updatedBlog = {
+		...foundBlog._doc,
+		comments: foundBlog.comments !== null
+			? [...foundBlog.comments, {content, id: generateId()}]
+			: [{content, id: generateId()}],
+	};
+
+	await Blog.findByIdAndUpdate(req.params.id, updatedBlog, { new: true });
+	res.json(updatedBlog);
+});
+
+blogsRouter.delete('/:id/comments', async (req, res) => {
+	const blog = await Blog.findById(req.params.id);
+	const updatedBlog = {
+		...blog._doc,
+		comments: [],
+	}
+	await Blog.findByIdAndUpdate(req.params.id, updatedBlog, { new: true })
+	res.json(updatedBlog)
+})
 
 module.exports = blogsRouter;
