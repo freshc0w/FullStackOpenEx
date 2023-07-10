@@ -3,6 +3,29 @@ const { startStandaloneServer } = require('@apollo/server/standalone');
 const { v1: uuid } = require('uuid');
 const { GraphQLError } = require('graphql');
 
+// connecting to mongodb
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', false);
+const Author = require('./models/author');
+const Book = require('./models/book');
+const User = require('./models/user');
+
+// jwt
+const jwt = require('jsonwebtoken');
+
+require('dotenv').config();
+
+const MONGODB_URI = process.env.MONGODB_URI;
+
+mongoose
+	.connect(MONGODB_URI)
+	.then(() => {
+		console.log('connected to MongoDB');
+	})
+	.catch(err => {
+		console.log('error connection to MongoDB: ', err.message);
+	});
+
 let authors = [
 	{
 		name: 'Robert Martin',
@@ -105,12 +128,23 @@ const typeDefs = `
 		author: String!
 		published: Int!
 		genres: [String!]!
+		id: ID!
 	}
 
 	type Author {
 		name: String!
 		born: Int
 		bookCount: Int!
+	}
+
+	type User {
+		username: String!
+		favoriteGenre: String!
+		id: ID!
+	}
+
+	type Token {
+		value: String!
 	}
 
 	type Query {
@@ -121,6 +155,7 @@ const typeDefs = `
 			genre: String
 			): [Book!]!
 		allAuthors: [Author!]
+		me: User
 	}
 
 	type Mutation {
@@ -134,9 +169,180 @@ const typeDefs = `
 			name: String!
 			setBornTo: Int
 		): Author
+
+		createUser(
+			username: String!
+			favoriteGenre: String!
+		): User
+		login(
+			username: String!
+			password: String!
+		): Token
 	}
 `;
 
+// With DB
+const resolvers = {
+	Query: {
+		bookCount: async () => Book.collection.countDocuments(),
+		authorCount: async () => Author.collection.countDocuments(),
+		allBooks: async (root, args) => {
+			if (args.author) {
+				const author = await Author.findOne({ name: args.author });
+				if (author) {
+					if (args.genre) {
+						return await Book.find({
+							author: author.id,
+							genres: { $in: [args.genre] },
+						}).populate('author');
+					}
+					return await Book.find({ author: author.id }).populate('author');
+				}
+				return null;
+			}
+
+			if (args.genre)
+				return Book.find({ genres: { $in: [args.genre] } }).populate('author');
+
+			return Book.find({}).populate('author');
+		},
+		me: (root, args, context) => context.currentUser,
+	},
+	Author: {
+		bookCount: root => {
+			return books.reduce(
+				(acc, val) => (root.name === val.author ? acc + 1 : acc),
+				0
+			);
+		},
+	},
+	Mutation: {
+		addBook: async (root, args, { currentUser }) => {
+			const book = await Book.findOne({ title: args.title });
+			const author = await Author.findOne({ name: args.author.name });
+
+			if (!currentUser)
+				throw new GraphQLError('not authenticated', {
+					extensions: {
+						code: 'BAD_USER_INPUT',
+					},
+				});
+
+			if (book)
+				throw new GraphQLError('Book exists', {
+					invalidArgs: args.title,
+				});
+
+			// Author not found
+			if (!author) {
+				const newAuthor = new Author({ ...args.author });
+				try {
+					await newAuthor.save();
+				} catch (error) {
+					throw new GraphQLError('Saving author failed', {
+						extensions: {
+							code: 'BAD_USER_INPUT',
+							invalidArgs: args.name,
+							error,
+						},
+					});
+				}
+			}
+
+			// Create a new book based on args.
+			const newBook = new Book({ ...args });
+			try {
+				await newBook.save();
+			} catch (error) {
+				throw new GraphQLError('Saving book failed', {
+					extensions: {
+						code: 'BAD_USER_INPUT',
+						invalidArgs: args.name,
+						error,
+					},
+				});
+			}
+			return book;
+		},
+
+		// edit author's born date
+		editAuthor: async (root, args, { currentUser }) => {
+			const author = await Author.find({ name: args.name });
+
+			if (!currentUser)
+				throw new GraphQLError('not authenticated', {
+					extensions: {
+						code: 'BAD_USER_INPUT',
+					},
+				});
+
+			// If author can't be found, return null
+			if (!author) return null;
+
+			const updatedAuthor = { ...author, born: args.setBornTo };
+			return await Author.findOneAndReplace(author, updatedAuthor);
+		},
+		createUser: async (root, args) => {
+			const user = new User({ ...args });
+
+			return user.save().catch(error => {
+				throw new GraphQLError('Creating the user failed', {
+					extensions: {
+						code: 'BAD_USER_INPUT',
+						invalidArgs: args.name,
+						error,
+					},
+				});
+			});
+		},
+		login: async (root, args) => {
+			const user = await User.findOne({ username: args.username });
+
+			if (!user || args.password !== 'secret') {
+				throw new GraphQLError('wrong credentials', {
+					extensions: {
+						code: 'BAD_USER_INPUT',
+					},
+				});
+			}
+
+			const userForToken = {
+				username: user.username,
+				id: user._id,
+			};
+
+			return { value: jwt.sign(userForToken, process.env.JWT_SECRET) };
+		},
+	},
+};
+
+const server = new ApolloServer({
+	typeDefs,
+	resolvers,
+});
+
+// connection w/ authorization
+startStandaloneServer(server, {
+	listen: { port: 4000 },
+	context: async ({ req, res }) => {
+		const auth = req ? req.headers.authorization : null;
+		if (auth && auth.startsWith('Bearer ')) {
+			const decodedToken = jwt.verify(
+				auth.substring(7),
+				process.env.JWT_SECRET
+			);
+			const currentUser = await User.findById(decodedToken.id);
+
+			return { currentUser };
+		}
+	},
+}).then(({ url }) => {
+	console.log(`Server ready at ${url}`);
+});
+
+/**
+ * WITHOUT DATABASE
+ * 
 const resolvers = {
 	Query: {
 		bookCount: () => books.length,
@@ -145,8 +351,7 @@ const resolvers = {
 			if (args.genre && args.author)
 				return books.filter(
 					book =>
-						book.genres.includes(args.genre) &&
-						book.author === args.author
+						book.genres.includes(args.genre) && book.author === args.author
 				);
 
 			if (args.genre) {
@@ -184,7 +389,7 @@ const resolvers = {
 			if (!author) return null;
 
 			const updatedAuthor = { ...author, born: args.setBornTo };
-			authors.map(author =>
+			authors = authors.map(author =>
 				author.name === args.name ? updatedAuthor : author
 			);
 			return updatedAuthor;
@@ -202,3 +407,5 @@ startStandaloneServer(server, {
 }).then(({ url }) => {
 	console.log(`Server ready at ${url}`);
 });
+ * 
+ */
