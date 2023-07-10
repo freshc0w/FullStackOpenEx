@@ -23,9 +23,9 @@ const LoginForm = ({ setError, setToken }) => {
 	const submit = async e => {
 		e.preventDefault();
 
-		login({ variables: { userName, password } });
+		login({ variables: { username: userName, password } });
 	};
-  
+
 	return (
 		<div>
 			<form onSubmit={submit}>

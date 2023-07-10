@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { gql, useQuery } from '@apollo/client';
+import { gql, useQuery, useApolloClient } from '@apollo/client';
 import { ALL_PERSONS } from './queries';
 
 import Persons from './components/Persons';
 import PersonForm from './components/PersonForm';
+import Notify from './components/Notify';
 import PhoneForm from './components/PhoneForm';
 import LoginForm from './components/LoginForm';
 
@@ -12,8 +13,15 @@ const App = () => {
 	const [token, setToken] = useState(null);
 
 	const result = useQuery(ALL_PERSONS);
+	const client = useApolloClient();
 
 	if (result.loading) return <div>loading...</div>;
+
+	const logout = () => {
+		setToken(null);
+		localStorage.clear();
+		client.resetStore();
+	};
 
 	const notify = message => {
 		setErrorMsg(message);
@@ -37,16 +45,11 @@ const App = () => {
 	return (
 		<div>
 			<Notify errorMessage={errorMsg} />
+			<button onClick={logout}>logout</button>
 			<Persons persons={result.data.allPersons} />
 			<PersonForm setError={notify} />
-			<PhoneForm />
+			<PhoneForm setError={notify} />
 		</div>
-	);
-};
-
-const Notify = ({ errorMessage }) => {
-	return !errorMessage ? null : (
-		<div style={{ color: 'red' }}>{errorMessage}</div>
 	);
 };
 

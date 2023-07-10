@@ -13,16 +13,23 @@ const PersonForm = ({ setError }) => {
 	// Refetching queries to update the cache
 	const [createPerson] = useMutation(CREATE_PERSON, {
 		refetchQueries: [{ query: ALL_PERSONS }],
-    onError: (error) => {
-      const messages = error.graphQLErrors[0].message;
-      setError(messages);
-    }
+		onError: error => {
+			const messages = error.graphQLErrors[0].message;
+			setError(messages);
+		},
 	});
 
-	const submit = e => {
+	const submit = async e => {
 		e.preventDefault();
 
-		createPerson({ variables: { name, phone, street, city } });
+		createPerson({
+			variables: {
+				name,
+				street,
+				city,
+				phone: phone.length > 0 ? phone : undefined,
+			},
+		});
 
 		setName('');
 		setPhone('');
