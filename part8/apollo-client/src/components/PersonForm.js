@@ -11,11 +11,28 @@ const PersonForm = ({ setError }) => {
 	// const [createPerson] = useMutation(CREATE_PERSON);
 
 	// Refetching queries to update the cache
+	// const [createPerson] = useMutation(CREATE_PERSON, {
+	// 	refetchQueries: [{ query: ALL_PERSONS }],
+	// 	onError: error => {
+	// 		const errors = error.graphQLErrors[0].extensions.error.errors;
+	// 		const messages = Object.values(errors)
+	// 			.map(e => e.message)
+	// 			.join('\n');
+	// 		setError(messages);
+	// 	},
+	// });
+
+	// Optimised way (manually updating cache)
 	const [createPerson] = useMutation(CREATE_PERSON, {
-		refetchQueries: [{ query: ALL_PERSONS }],
 		onError: error => {
-			const messages = error.graphQLErrors[0].message;
-			setError(messages);
+			setError(error.graphQLErrors[0].message);
+		},
+		update: (cache, response) => {
+			cache.updateQuery({ query: ALL_PERSONS }, ({ allPersons }) => {
+				return {
+					allPersons: allPersons.concat(response.data.addPerson),
+				};
+			});
 		},
 	});
 
