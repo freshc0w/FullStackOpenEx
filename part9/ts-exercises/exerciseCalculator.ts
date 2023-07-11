@@ -1,4 +1,4 @@
-interface Description {
+export interface Description {
 	periodLength: number;
 	trainingDays: number;
 	success: boolean;
@@ -14,11 +14,11 @@ interface ExerciseValues {
 }
 
 const configureArguments = (args: string[]): ExerciseValues => {
-	let lastElem = args.at(2);
-	let days = args
+	const lastElem = args.at(2);
+	const days = args
 		.slice(3, args.length)
 		.map(num => (!isNaN(Number(num)) ? Number(num) : undefined));
-	let target = !isNaN(Number(lastElem)) ? Number(lastElem) : undefined;
+	const target = !isNaN(Number(lastElem)) ? Number(lastElem) : undefined;
 
 	if (!days.includes(undefined) || target !== undefined) {
 		return {
@@ -29,7 +29,7 @@ const configureArguments = (args: string[]): ExerciseValues => {
 	throw new Error('Provided values were not numbers!');
 };
 
-const calculateExercises = (
+export const calculateExercises = (
 	dailyHours: number[],
 	target: number
 ): Description => {

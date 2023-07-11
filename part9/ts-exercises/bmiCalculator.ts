@@ -16,8 +16,8 @@ const parseArguments = (
 			value2: Number(args[3]),
 		};
 	} else {
-    throw new Error('Provided values were not numbers!')
-  }
+		throw new Error('Provided values were not numbers!');
+	}
 };
 
 // BMI = mass / h^2
@@ -44,17 +44,14 @@ export const calculateBmi = (height: number, mass: number): string => {
 };
 
 try {
-  const { value1, value2 } = parseArguments(process.argv, 3);
-  console.log(calculateBmi(
-    value1,
-    value2
-  ))
-} catch(error: unknown) {
-  let errorMessage = 'Something bad occured: '
-  if(error instanceof Error) {
-    errorMessage += error.message;
-  }
-  console.log(errorMessage);
+	const { value1, value2 } = parseArguments(process.argv, 3);
+	console.log(calculateBmi(value1, value2));
+} catch (error: unknown) {
+	let errorMessage = 'Something bad occured: ';
+	if (error instanceof Error) {
+		errorMessage += error.message;
+	}
+	console.log(errorMessage);
 }
 
 // console.log(calculateBmi(180, 74));
