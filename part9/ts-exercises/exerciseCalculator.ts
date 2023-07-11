@@ -17,10 +17,10 @@ const configureArguments = (args: string[]): ExerciseValues => {
 	const lastElem = args.at(2);
 	const days = args
 		.slice(3, args.length)
-		.map(num => (!isNaN(Number(num)) ? Number(num) : undefined));
-	const target = !isNaN(Number(lastElem)) ? Number(lastElem) : undefined;
+		.map(num => (!isNaN(Number(num)) ? Number(num) : -1));
+	const target = !isNaN(Number(lastElem)) ? Number(lastElem) : 0;
 
-	if (!days.includes(undefined) || target !== undefined) {
+	if (!days.includes(-1) || target !== 0) {
 		return {
 			days,
 			target,
@@ -52,7 +52,7 @@ export const calculateExercises = (
 	} else if (average >= target * 1.5) {
 		rating = 5;
 		ratingDescription = 'Congrats you outperformed your goal';
-	} else if (average >= target * 1.25) {
+	} else {
 		ratingDescription = 'INCREDIBLE PERORMANCE';
 		rating = 4;
 	}
