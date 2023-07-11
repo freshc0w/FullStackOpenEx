@@ -12,6 +12,7 @@ const cors = require('cors');
 const http = require('http');
 
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -32,6 +33,8 @@ mongoose
 		console.log('connected to MongoDB');
 	})
 	.catch(error => console.log('error connection to MongoDB: ', error.message));
+
+mongoose.set('debug', true);
 
 // set up is now within a function
 const start = async () => {
