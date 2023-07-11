@@ -21,7 +21,7 @@ const parseArguments = (
 };
 
 // BMI = mass / h^2
-const calculateBmi = (height: number, mass: number): string => {
+export const calculateBmi = (height: number, mass: number): string => {
 	const bmi = mass / (height / 100) ** 2;
 	console.log(`BMI is: ${bmi}`);
 	if (bmi < 16) {
