@@ -13,3 +13,5 @@ export interface DiaryEntry {
 
 // Can also use Pick. Omit is the opposite
 export type NonSensitiveDiaryEntry = Omit<DiaryEntry, 'comment'>;
+// If pick is used it would be:
+// export type NonSensitiveDiaryEntry = Pick<DiaryEntry, 'visibility' | 'weather' | 'date' | 'id'
