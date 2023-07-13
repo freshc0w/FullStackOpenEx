@@ -25,7 +25,7 @@ interface CoursePartBackground extends CoursePartDesc {
 }
 
 interface CoursePartSpecial extends CoursePartDesc {
-	requirements: String[];
+	requirements: string[];
 	kind: 'special';
 }
 
