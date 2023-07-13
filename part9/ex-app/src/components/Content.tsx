@@ -1,23 +1,33 @@
-export interface TotalValue {
-	courseParts: {
-		name: string;
-		exerciseCount: number;
-	}[];
+import { CourseParts } from '../App';
+import Part from './Part';
+
+export interface CourseList {
+	courseParts: CourseParts[];
 }
-const Content = (props: TotalValue) => {
+
+const Content = ({ courseParts }: CourseList) => {
 	return (
-		<>
-			<p>
-				{props.courseParts[0].name} {props.courseParts[0].exerciseCount}
-			</p>
-			<p>
-				{props.courseParts[1].name} {props.courseParts[1].exerciseCount}
-			</p>
-			<p>
-				{props.courseParts[2].name} {props.courseParts[2].exerciseCount}
-			</p>
-		</>
+		<div>
+			{courseParts.map((part, idx) => (
+				<Part key={idx} coursePart={part} />
+			))}
+		</div>
 	);
 };
 
 export default Content;
+// const Content = (props: TotalValue) => {
+// 	return (
+// 		<>
+// 			<p>
+// 				{props.courseParts[0].name} {props.courseParts[0].exerciseCount}
+// 			</p>
+// 			<p>
+// 				{props.courseParts[1].name} {props.courseParts[1].exerciseCount}
+// 			</p>
+// 			<p>
+// 				{props.courseParts[2].name} {props.courseParts[2].exerciseCount}
+// 			</p>
+// 		</>
+// 	);
+// };

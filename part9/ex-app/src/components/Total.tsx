@@ -1,6 +1,6 @@
-import { TotalValue } from './Content';
+import { CourseList } from "./Content";
 
-const Total = ({ courseParts }: TotalValue) => {
+const Total = ({ courseParts }: CourseList) => {
 	return (
 		<div>
 			<h1>Number of exercises</h1>
