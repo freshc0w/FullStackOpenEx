@@ -1,11 +1,19 @@
 import express from 'express';
 import patientService from '../services/patientService';
 import toNewPatientEntry from '../utils';
+import { Patient, Entry } from '../types';
 
 const router = express.Router();
 
 router.get('/', (_req, res) => {
 	res.send(patientService.getNonSensitiveEntries());
+});
+
+router.get('/:id', (req, res) => {
+	const id = req.params.id;
+	const entry = patientService.findPatientById(id);
+	const newEntry: Patient = { ...entry, entries: [] as Entry } as Patient;
+	return res.send(newEntry);
 });
 
 router.post('/', (req, res) => {
@@ -14,7 +22,7 @@ router.post('/', (req, res) => {
 
 		const addedEntry = patientService.addPatient(newPatientEntry);
 		res.json(addedEntry);
-    console.log('added', addedEntry);
+		console.log('added', addedEntry);
 	} catch (error: unknown) {
 		let errorMsg = 'Something went wrong';
 		if (error instanceof Error) {
