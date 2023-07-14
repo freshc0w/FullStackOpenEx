@@ -1,7 +1,7 @@
 import express from 'express';
 import patientService from '../services/patientService';
 import toNewPatientEntry from '../utils';
-import { Patient, Entry } from '../types';
+// import { Patient, Entry } from '../types';
 
 const router = express.Router();
 
@@ -11,9 +11,8 @@ router.get('/', (_req, res) => {
 
 router.get('/:id', (req, res) => {
 	const id = req.params.id;
-	const entry = patientService.findPatientById(id);
-	const newEntry: Patient = { ...entry, entries: [] as Entry } as Patient;
-	return res.send(newEntry);
+	const entry = patientService.findPatientWithEntriesById(id);
+	return res.send(entry);
 });
 
 router.post('/', (req, res) => {
