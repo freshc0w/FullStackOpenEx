@@ -37,6 +37,8 @@ const findPatientById = (id: string): PatientEntry | undefined => {
 	return entry;
 };
 
+
+
 export default {
 	getEntries,
 	getNonSensitiveEntries,
